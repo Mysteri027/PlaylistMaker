@@ -12,5 +12,24 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+
+        <item name="main_screen_background">@color/main_screen_background</item>
+        <item name="main_screen_title_color">@color/main_screen_title_color</item>
+        <item name="main_screen_text_color">@color/main_screen_text_color</item>
+        <item name="main_screen_background_tint">@color/main_screen_background_tint</item>
+
+        <item name="settings_header_text_color">@color/settings_header_text_color</item>
+        <item name="settings_screen_background">@color/settings_screen_background</item>
+        <item name="settings_text_color">@color/settings_text_color</item>
+        <item name="settings_icon_fill_color">@color/settings_icon_fill_color</item>
+
+        <item name="search_screen_background">@color/search_screen_background</item>
+        <item name="search_field_background">@color/search_field_background</item>
+        <item name="search_field_text_color">@color/search_field_text_color</item>
+        <item name="search_field_hint_color">@color/search_field_hint_color</item>
+
+        <item name="search_title_button_color">@color/search_field_hint_color</item>
+
+
     </style>
 </resources>

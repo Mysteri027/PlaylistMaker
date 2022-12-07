@@ -9,4 +9,11 @@
     <string name="write_to_support">Написать в поддержку</string>
     <string name="user_agreement">Пользовательское соглашение</string>
     <string name="settings">Настройки</string>
+    <string name="search">Поиск</string>
+    <string name="search_hint">Поиск</string>
+
+    <string name="yandex_practicum_link">https://practicum.yandex.ru/android-developer/</string>
+    <string name="my_email">igor.sheplyakov@yandex.ru</string>
+    <string name="email_subject">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
+    <string name="practicum_offer_link">https://yandex.ru/legal/practicum_offer/</string>
 </resources>
