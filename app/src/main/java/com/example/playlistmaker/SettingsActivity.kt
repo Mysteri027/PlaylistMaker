@@ -4,7 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.ImageView
+import android.widget.FrameLayout
 import android.widget.TextView
 
 class SettingsActivity : AppCompatActivity() {
@@ -13,19 +13,18 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        val shareButton = findViewById<ImageView>(R.id.share_button)
-        val supportButton = findViewById<ImageView>(R.id.support_button)
-        val arrowForwardButton = findViewById<ImageView>(R.id.arrow_forward_button)
+        val shareContainer = findViewById<FrameLayout>(R.id.share_container)
+        val supportContainer = findViewById<FrameLayout>(R.id.support_container)
+        val arrowForwardContainer  = findViewById<FrameLayout>(R.id.arrow_forward_container)
         val settingsTitle = findViewById<TextView>(R.id.setting_title)
 
 
         settingsTitle.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
+            finish()
         }
 
 
-        shareButton.setOnClickListener {
+        shareContainer.setOnClickListener {
             val sendIntent: Intent = Intent().apply {
                 action = Intent.ACTION_SEND
                 putExtra(Intent.EXTRA_TEXT, resources.getString(R.string.yandex_practicum_link))
@@ -35,7 +34,7 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(Intent.createChooser(sendIntent, null))
         }
 
-        supportButton.setOnClickListener {
+        supportContainer.setOnClickListener {
             val supportIntent: Intent = Intent().apply {
                 action = Intent.ACTION_SENDTO
                 data = Uri.parse("mailto:")
@@ -45,7 +44,7 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(supportIntent)
         }
 
-        arrowForwardButton.setOnClickListener {
+        arrowForwardContainer.setOnClickListener {
             val arrowForwardIntent: Intent = Intent().apply {
                 action = Intent.ACTION_VIEW
                 data = Uri.parse(resources.getString(R.string.practicum_offer_link))

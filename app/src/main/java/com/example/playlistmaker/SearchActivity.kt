@@ -25,8 +25,7 @@ class SearchActivity : AppCompatActivity() {
         val searchTitle = findViewById<TextView>(R.id.search_title)
 
         searchTitle.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
+            finish()
         }
 
         clearButton.setOnClickListener {
@@ -47,8 +46,12 @@ class SearchActivity : AppCompatActivity() {
                 // empty
             }
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                clearButton.visibility = clearButtonVisibility(p0)
+            override fun onTextChanged(s: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                clearButton.visibility = clearButtonVisibility(s)
+
+                if (clearButton.visibility == View.VISIBLE) {
+                    searchInputText = s.toString()
+                }
             }
 
             override fun afterTextChanged(p0: Editable?) {
@@ -76,7 +79,6 @@ class SearchActivity : AppCompatActivity() {
         return if (s.isNullOrEmpty()) {
             View.GONE
         } else {
-            searchInputText = s.toString()
             View.VISIBLE
         }
     }

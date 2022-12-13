@@ -11,13 +11,16 @@
         android:text="@string/settings"
         app:drawableStartCompat="@drawable/back_button" />
 
-    <FrameLayout style="@style/SettingsScreenFrameLayout">
+    <FrameLayout
+        android:id="@+id/black_theme_container"
+        style="@style/SettingsScreenFrameLayout">
 
         <TextView
             style="@style/SettingsScreenText"
             android:text="@string/dark_theme" />
 
         <Switch
+            android:id="@+id/switch_theme_button"
             style="@style/SettingsScreenImageButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -25,7 +28,9 @@
 
     </FrameLayout>
 
-    <FrameLayout style="@style/SettingsScreenFrameLayout">
+    <FrameLayout
+        android:id="@+id/share_container"
+        style="@style/SettingsScreenFrameLayout">
 
         <TextView
             style="@style/SettingsScreenText"
@@ -38,7 +43,9 @@
 
     </FrameLayout>
 
-    <FrameLayout style="@style/SettingsScreenFrameLayout">
+    <FrameLayout
+        android:id="@+id/support_container"
+        style="@style/SettingsScreenFrameLayout">
 
         <TextView
             style="@style/SettingsScreenText"
@@ -51,7 +58,9 @@
 
     </FrameLayout>
 
-    <FrameLayout style="@style/SettingsScreenFrameLayout">
+    <FrameLayout
+        android:id="@+id/arrow_forward_container"
+        style="@style/SettingsScreenFrameLayout">
 
         <TextView
             style="@style/SettingsScreenText"
