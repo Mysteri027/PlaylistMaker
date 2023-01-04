@@ -2,109 +2,73 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#F5F5F5"
-    android:orientation="vertical">
+    style="@style/SettingsScreenContainer">
 
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="14dp"
-        android:layout_marginBottom="16dp"
-        android:drawablePadding="20dp"
-        android:fontFamily="@font/ys_display"
+        android:id="@+id/setting_title"
+        style="@style/ScreenTitle"
         android:text="@string/settings"
-        android:textColor="@color/settings_heater_text_color"
-        android:textSize="@dimen/settings_header_text_size"
         app:drawableStartCompat="@drawable/back_button" />
 
     <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/settings_item_padding">
+        android:id="@+id/black_theme_container"
+        style="@style/SettingsScreenFrameLayout">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:text="@string/dark_theme"
-            android:textColor="@color/settings_text_color"
-            android:textSize="@dimen/settings_text_size" />
+            style="@style/SettingsScreenText"
+            android:text="@string/dark_theme" />
 
         <Switch
+            android:id="@+id/switch_theme_button"
+            style="@style/SettingsScreenImageButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:fillColor="@color/settings_switch_fill_color"
-            tools:ignore="UseSwitchCompatOrMaterialXml" />
+            tools:ignore="UseSwitchCompatOrMaterialXml,TouchTargetSizeCheck" />
 
     </FrameLayout>
 
     <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/settings_item_padding">
+        android:id="@+id/share_container"
+        style="@style/SettingsScreenFrameLayout">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:text="@string/share_app"
-            android:textColor="@color/settings_text_color"
-            android:textSize="@dimen/settings_text_size" />
+            style="@style/SettingsScreenText"
+            android:text="@string/share_app" />
 
         <ImageView
-            android:layout_width="@dimen/settings_icon_width"
-            android:layout_height="@dimen/settings_icon_height"
-            android:layout_gravity="end"
-            android:fillColor="@color/settings_icon_fill_color"
+            android:id="@+id/share_button"
+            style="@style/SettingsScreenImageButton"
             android:src="@drawable/share_icon" />
 
     </FrameLayout>
 
     <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/settings_item_padding">
+        android:id="@+id/support_container"
+        style="@style/SettingsScreenFrameLayout">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:text="@string/write_to_support"
-            android:textColor="@color/settings_text_color"
-            android:textSize="@dimen/settings_text_size" />
+            style="@style/SettingsScreenText"
+            android:text="@string/write_to_support" />
 
         <ImageView
-            android:layout_width="@dimen/settings_icon_width"
-            android:layout_height="@dimen/settings_icon_height"
-            android:layout_gravity="end"
-            android:fillColor="@color/settings_icon_fill_color"
+            android:id="@+id/support_button"
+            style="@style/SettingsScreenImageButton"
             android:src="@drawable/support_icon" />
 
     </FrameLayout>
 
     <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/settings_item_padding">
+        android:id="@+id/arrow_forward_container"
+        style="@style/SettingsScreenFrameLayout">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:text="@string/user_agreement"
-            android:textColor="@color/settings_text_color"
-            android:textSize="@dimen/settings_text_size" />
+            style="@style/SettingsScreenText"
+            android:text="@string/user_agreement" />
 
         <ImageView
-            android:layout_width="@dimen/settings_icon_width"
-            android:layout_height="@dimen/settings_icon_height"
-            android:layout_gravity="end"
-            android:fillColor="@color/settings_icon_fill_color"
+            android:id="@+id/arrow_forward_button"
+            style="@style/SettingsScreenImageButton"
             android:src="@drawable/arrow_forward_icon" />
 
     </FrameLayout>

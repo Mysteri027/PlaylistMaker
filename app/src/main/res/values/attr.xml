@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="main_screen_background" format="reference" />
+    <attr name="main_screen_title_color" format="reference" />
+    <attr name="main_screen_text_color" format="reference" />
+    <attr name="main_screen_background_tint" format="reference" />
+
+    <attr name="settings_header_text_color" format="reference" />
+    <attr name="settings_screen_background" format="reference" />
+    <attr name="settings_text_color" format="reference" />
+    <attr name="settings_icon_fill_color" format="reference" />
+
+    <attr name="search_screen_background" format="reference" />
+    <attr name="search_field_background" format="reference" />
+    <attr name="search_field_text_color" format="reference" />
+    <attr name="search_field_hint_color" format="reference" />
+    <attr name="search_title_button_color" format="reference" />
+</resources>
