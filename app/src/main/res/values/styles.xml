@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+
+    <!--    MainScreen  -->
     <style name="MainScreenContainer">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
@@ -34,6 +36,7 @@
         <item name="iconTint">@color/black</item>
     </style>
 
+    <!--    SettingScreen  -->
     <style name="SettingsScreenContainer">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
@@ -75,6 +78,8 @@
         <item name="android:padding">@dimen/settings_item_padding</item>
     </style>
 
+
+    <!--    SearchScreen  -->
     <style name="SearchScreen">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
@@ -94,6 +99,13 @@
         <item name="android:padding">8.5dp</item>
         <item name="android:textColor">?attr/search_field_text_color</item>
         <item name="android:textColorHint">?attr/search_field_hint_color</item>
+    </style>
+
+    <style name="SearchScreenTrackItemArtistAndTime">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textSize">11sp</item>
     </style>
 
 </resources>
