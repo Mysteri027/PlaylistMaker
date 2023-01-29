@@ -1,7 +1,6 @@
 package com.example.playlistmaker.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
@@ -37,16 +36,19 @@ class TrackAdapter(
 
         fun bind(track: Track) {
 
+            val cornerRadius =
+                itemView.resources.getDimensionPixelSize(R.dimen.search_screen_image_corner_radius)
+
             Glide.with(itemView)
                 .load(track.artworkUrl100)
                 .placeholder(R.drawable.track_placeholder)
                 .centerCrop()
-                .transform(RoundedCorners(2))
+                .transform(RoundedCorners(cornerRadius))
                 .into(trackCover)
 
             trackName.text = track.trackName
             trackArtist.text = track.artistName
-            trackTime.text = track.trackName
+            trackTime.text = track.trackTime
         }
     }
 }
