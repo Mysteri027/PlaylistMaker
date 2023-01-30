@@ -21,10 +21,10 @@
         <EditText
             android:id="@+id/search_text"
             style="@style/SearchField"
+            android:background="@drawable/rounded_edittext"
             android:hint="@string/search_hint"
             android:inputType="text"
-            app:drawableStartCompat="@drawable/search_icon"
-            android:background="@drawable/rounded_edittext"/>
+            app:drawableStartCompat="@drawable/search_icon" />
 
         <ImageView
             android:id="@+id/button_clear"
@@ -35,7 +35,15 @@
             android:src="@drawable/clear_button"
             android:visibility="gone"
             tools:visibility="visible" />
-
     </FrameLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/track_list_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/search_screen_recycler_view_margin_top"
+        android:orientation="vertical"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/track_item" />
 
 </LinearLayout>

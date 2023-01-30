@@ -15,4 +15,8 @@
     <attr name="search_field_text_color" format="reference" />
     <attr name="search_field_hint_color" format="reference" />
     <attr name="search_title_button_color" format="reference" />
+
+    <attr name="search_screen_item_track_name_color" format="reference" />
+    <attr name="search_screen_item_artist_name_color" format="reference" />
+    <attr name="search_screen_item_track_time_color" format="reference" />
 </resources>

@@ -10,9 +10,10 @@
         <item name="colorSecondaryVariant">@color/teal_200</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+        <item name="android:statusBarColor">?attr/main_screen_background</item>
 
+
+        <!-- Customize your theme here. -->
         <item name="main_screen_background">@color/main_screen_background_black_theme</item>
         <item name="main_screen_title_color">@color/main_screen_title_color</item>
         <item name="main_screen_text_color">@color/main_screen_text_color</item>
@@ -29,6 +30,10 @@
         <item name="search_field_hint_color">@color/search_field_hint_color_black_theme</item>
 
         <item name="search_title_button_color">@color/search_field_hint_color_black_theme</item>
+
+        <item name="search_screen_item_track_name_color">@color/white</item>
+        <item name="search_screen_item_artist_name_color">@color/white</item>
+        <item name="search_screen_item_track_time_color">@color/white</item>
 
     </style>
 </resources>
