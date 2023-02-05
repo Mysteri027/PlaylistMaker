@@ -16,4 +16,5 @@
     <string name="my_email">igor.sheplyakov@yandex.ru</string>
     <string name="email_subject">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
     <string name="practicum_offer_link">https://yandex.ru/legal/practicum_offer/</string>
+    <string name="media_library">Медиатека</string>
 </resources>
