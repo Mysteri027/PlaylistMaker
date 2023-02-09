@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.acrivity
 
 import android.content.Intent
 import android.net.Uri
@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.FrameLayout
 import android.widget.TextView
+import com.example.playlistmaker.R
 
 class SettingsActivity : AppCompatActivity() {
 

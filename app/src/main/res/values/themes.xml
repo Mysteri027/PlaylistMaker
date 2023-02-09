@@ -33,5 +33,6 @@
         <item name="search_screen_item_track_name_color">@color/black</item>
         <item name="search_screen_item_artist_name_color">@color/yp_text_gray</item>
         <item name="search_screen_item_track_time_color">@color/yp_text_gray</item>
+        <item name="search_screen_not_found_image_color">@color/yp_black</item>
     </style>
 </resources>
