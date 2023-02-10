@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/SearchScreen"
-    tools:context=".SearchActivity">
+    tools:context=".acrivity.SearchActivity">
 
     <TextView
         android:id="@+id/search_title"
@@ -23,8 +23,11 @@
             style="@style/SearchField"
             android:background="@drawable/rounded_edittext"
             android:hint="@string/search_hint"
+            android:imeOptions="actionDone"
             android:inputType="text"
-            app:drawableStartCompat="@drawable/search_icon" />
+            android:singleLine="true"
+            app:drawableStartCompat="@drawable/search_icon"
+            tools:ignore="TouchTargetSizeCheck" />
 
         <ImageView
             android:id="@+id/button_clear"
@@ -37,13 +40,79 @@
             tools:visibility="visible" />
     </FrameLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/track_list_recycler_view"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/search_screen_recycler_view_margin_top"
-        android:orientation="vertical"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/track_item" />
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/track_list_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/search_screen_recycler_view_margin_top"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="2"
+            tools:listitem="@layout/track_item"
+            tools:visibility="invisible" />
+
+        <LinearLayout
+            android:id="@+id/not_found_placeholder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="invisible">
+
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/not_found" />
+
+            <TextView
+                android:layout_marginTop="20dp"
+                style="@style/SearchScreenNetworkErrorText"
+                android:text="@string/not_found" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/network_error_placeholder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:visibility="invisible">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/network_error" />
+
+            <TextView
+                style="@style/SearchScreenNetworkErrorText"
+                android:text="@string/network_error"
+                android:lines="2"/>
+
+            <TextView
+                style="@style/SearchScreenNetworkErrorText"
+                android:text="@string/fail_download"
+                android:lines="2"/>
+
+            <Button
+                android:id="@+id/update_button"
+                android:layout_marginTop="@dimen/search_screen_margin_top"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="?attr/settings_header_text_color"
+                android:fontFamily="@font/ys_display_medium"
+                android:text="@string/update"
+                android:textAllCaps="false"
+                android:textSize="@dimen/search_screen_text_size"
+                app:cornerRadius="@dimen/search_screen_corner_radius" />
+        </LinearLayout>
+
+    </FrameLayout>
 
 </LinearLayout>

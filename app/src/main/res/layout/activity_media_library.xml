@@ -3,10 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/main_screen_background"
     android:gravity="center"
     android:orientation="vertical"
-    android:background="?attr/main_screen_background"
-    tools:context=".MediaLibraryActivity">
+    tools:context=".acrivity.MediaLibraryActivity">
 
 
     <!--    заглушка для MediaLibrary-->
@@ -14,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/ys_display_regular"
-        android:text="Медиатека"
+        android:text="@string/media_library"
         android:textColor="?attr/main_screen_background_tint"
         android:textSize="22sp"
         tools:ignore="MissingConstraints" />

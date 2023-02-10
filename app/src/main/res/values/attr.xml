@@ -19,4 +19,5 @@
     <attr name="search_screen_item_track_name_color" format="reference" />
     <attr name="search_screen_item_artist_name_color" format="reference" />
     <attr name="search_screen_item_track_time_color" format="reference" />
+    <attr name="search_screen_not_found_image_color" format="reference" />
 </resources>

@@ -25,5 +25,8 @@
     <dimen name="search_screen_recycler_view_margin_top">24dp</dimen>
     <dimen name="track_item_main_info_margin_start">8dp</dimen>
     <dimen name="track_item_name_margin_top">14dp</dimen>
+    <dimen name="search_screen_corner_radius">54dp</dimen>
+    <dimen name="search_screen_text_size">14sp</dimen>
+    <dimen name="search_screen_margin_top">24dp</dimen>
 
 </resources>
