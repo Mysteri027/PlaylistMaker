@@ -123,7 +123,8 @@ class SearchActivity : AppCompatActivity() {
                 if (response.code() == 200) {
                     trackList.clear()
                     if (response.body()?.results?.isNotEmpty() == true) {
-                        trackList.addAll(response.body()!!.results)
+                        val responseList = response.body()?.results ?: emptyList()
+                        trackList.addAll(responseList)
                         trackListAdapter.notifyDataSetChanged()
                     }
                     if (trackList.isEmpty()) {
