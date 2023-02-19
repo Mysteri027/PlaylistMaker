@@ -1,4 +1,4 @@
-package com.example.playlistmaker.acrivity
+package com.example.playlistmaker.activity
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity

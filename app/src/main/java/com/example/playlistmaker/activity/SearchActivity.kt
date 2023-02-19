@@ -1,4 +1,4 @@
-package com.example.playlistmaker.acrivity
+package com.example.playlistmaker.activity
 
 import android.os.Bundle
 import android.text.Editable
