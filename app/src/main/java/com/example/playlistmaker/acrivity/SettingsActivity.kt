@@ -2,11 +2,13 @@ package com.example.playlistmaker.acrivity
 
 import android.content.Intent
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import com.example.playlistmaker.App
 import com.example.playlistmaker.R
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -16,8 +18,17 @@ class SettingsActivity : AppCompatActivity() {
 
         val shareContainer = findViewById<FrameLayout>(R.id.share_container)
         val supportContainer = findViewById<FrameLayout>(R.id.support_container)
-        val arrowForwardContainer  = findViewById<FrameLayout>(R.id.arrow_forward_container)
+        val arrowForwardContainer = findViewById<FrameLayout>(R.id.arrow_forward_container)
         val settingsTitle = findViewById<TextView>(R.id.setting_title)
+        val themeSwitcher = findViewById<SwitchMaterial>(R.id.switch_theme_button)
+
+        val sharedPreferences = getSharedPreferences(
+            App.APP_SHARED_PREFERENCES_KEY, MODE_PRIVATE
+        )
+        themeSwitcher.isChecked = sharedPreferences.getBoolean(App.DART_THEME_KEY, false)
+        themeSwitcher.setOnCheckedChangeListener { _, checked ->
+            (application as App).switchTheme(checked)
+        }
 
 
         settingsTitle.setOnClickListener {
