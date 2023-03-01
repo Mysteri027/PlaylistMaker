@@ -3,40 +3,33 @@ package com.example.playlistmaker.activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.widget.FrameLayout
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.playlistmaker.App
 import com.example.playlistmaker.R
-import com.google.android.material.switchmaterial.SwitchMaterial
+import com.example.playlistmaker.databinding.ActivitySettingsBinding
 
 class SettingsActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivitySettingsBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
-
-        val shareContainer = findViewById<FrameLayout>(R.id.share_container)
-        val supportContainer = findViewById<FrameLayout>(R.id.support_container)
-        val arrowForwardContainer = findViewById<FrameLayout>(R.id.arrow_forward_container)
-        val settingsTitle = findViewById<TextView>(R.id.setting_title)
-        val themeSwitcher = findViewById<SwitchMaterial>(R.id.switch_theme_button)
+        binding = ActivitySettingsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         val sharedPreferences = getSharedPreferences(
             App.APP_SHARED_PREFERENCES_KEY, MODE_PRIVATE
         )
-        themeSwitcher.isChecked = sharedPreferences.getBoolean(App.DART_THEME_KEY, false)
-        themeSwitcher.setOnCheckedChangeListener { _, checked ->
+        binding.switchThemeButton.isChecked = sharedPreferences.getBoolean(App.DART_THEME_KEY, false)
+        binding.switchThemeButton.setOnCheckedChangeListener { _, checked ->
             (application as App).switchTheme(checked)
         }
 
-
-        settingsTitle.setOnClickListener {
+        binding.settingTitle.setOnClickListener {
             finish()
         }
 
-
-        shareContainer.setOnClickListener {
+        binding.shareContainer.setOnClickListener {
             val sendIntent: Intent = Intent().apply {
                 action = Intent.ACTION_SEND
                 putExtra(Intent.EXTRA_TEXT, resources.getString(R.string.yandex_practicum_link))
@@ -46,7 +39,7 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(Intent.createChooser(sendIntent, null))
         }
 
-        supportContainer.setOnClickListener {
+        binding.supportContainer.setOnClickListener {
             val supportIntent: Intent = Intent().apply {
                 action = Intent.ACTION_SENDTO
                 data = Uri.parse("mailto:")
@@ -56,7 +49,7 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(supportIntent)
         }
 
-        arrowForwardContainer.setOnClickListener {
+        binding.arrowForwardContainer.setOnClickListener {
             val arrowForwardIntent: Intent = Intent().apply {
                 action = Intent.ACTION_VIEW
                 data = Uri.parse(resources.getString(R.string.practicum_offer_link))

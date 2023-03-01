@@ -11,6 +11,7 @@
         android:text="@string/search"
         app:drawableStartCompat="@drawable/back_button" />
 
+    <!--    Search field-->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -44,6 +45,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!--        Track list-->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/track_list_recycler_view"
             android:layout_width="match_parent"
@@ -53,15 +55,69 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:itemCount="2"
             tools:listitem="@layout/track_item"
-            tools:visibility="invisible" />
+            tools:visibility="gone" />
 
+        <!--        Search history-->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/search_history"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/search_history_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/search_history_text_margin_top"
+                android:fontFamily="@font/ys_display_medium"
+                android:text="@string/you_searched"
+                android:textColor="?attr/search_screen_search_history_text_color"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:textSize="@dimen/search_history_text_size" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/search_history_list_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/search_history_list_recycler_view_margin_top"
+                android:orientation="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="10"
+                app:layout_constraintTop_toBottomOf="@+id/search_history_text"
+                tools:listitem="@layout/track_item" />
+
+
+            <Button
+                android:id="@+id/search_history_clear_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:backgroundTint="?attr/search_screen_search_history_button_color"
+                android:fontFamily="@font/ys_display_medium"
+                android:text="@string/clear_history"
+                android:textAllCaps="false"
+                android:textColor="?attr/search_screen_search_history_button_text_color"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="@dimen/search_history_clear_button_margin_bottom"
+                android:textSize="@dimen/search_history_clear_button_text_size"
+                app:cornerRadius="@dimen/search_history_clear_button_corner_radius" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <!--        Not found placeholder-->
         <LinearLayout
             android:id="@+id/not_found_placeholder"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
             android:orientation="vertical"
-            android:visibility="invisible">
+            android:visibility="gone">
 
 
             <ImageView
@@ -70,12 +126,12 @@
                 android:src="@drawable/not_found" />
 
             <TextView
-                android:layout_marginTop="20dp"
                 style="@style/SearchScreenNetworkErrorText"
+                android:layout_marginTop="20dp"
                 android:text="@string/not_found" />
         </LinearLayout>
 
-
+        <!--        Network error placeholder-->
         <LinearLayout
             android:id="@+id/network_error_placeholder"
             android:layout_width="match_parent"
@@ -83,7 +139,7 @@
             android:gravity="center"
             android:orientation="vertical"
             android:padding="24dp"
-            android:visibility="invisible">
+            android:visibility="gone">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -92,19 +148,19 @@
 
             <TextView
                 style="@style/SearchScreenNetworkErrorText"
-                android:text="@string/network_error"
-                android:lines="2"/>
+                android:lines="2"
+                android:text="@string/network_error" />
 
             <TextView
                 style="@style/SearchScreenNetworkErrorText"
-                android:text="@string/fail_download"
-                android:lines="2"/>
+                android:lines="2"
+                android:text="@string/fail_download" />
 
             <Button
                 android:id="@+id/update_button"
-                android:layout_marginTop="@dimen/search_screen_margin_top"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/search_screen_margin_top"
                 android:backgroundTint="?attr/settings_header_text_color"
                 android:fontFamily="@font/ys_display_medium"
                 android:text="@string/update"
