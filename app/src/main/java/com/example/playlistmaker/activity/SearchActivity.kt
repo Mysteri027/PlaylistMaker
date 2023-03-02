@@ -13,7 +13,6 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.SearchHistory
 import com.example.playlistmaker.adapter.TrackAdapter
 import com.example.playlistmaker.databinding.ActivitySearchBinding
-import com.example.playlistmaker.model.Track
 import com.example.playlistmaker.network.ITunesSearchAPIService
 import com.example.playlistmaker.network.PlaceHolderType
 import com.example.playlistmaker.network.TrackResponse
@@ -23,8 +22,6 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-private const val SEARCH_HISTORY_SHARED_PREFERENCES_KEY = "SEARCH_HISTORY_SHARED_PREFERENCES_KEY"
-private const val MAX_SEARCH_HISTORY_SIZE = 10
 
 class SearchActivity : AppCompatActivity() {
 
@@ -32,11 +29,8 @@ class SearchActivity : AppCompatActivity() {
 
     private var searchInputText = ""
 
-    private val trackList = arrayListOf<Track>()
-    private val trackListAdapter = TrackAdapter(trackList)
-
-    private var searchHistoryTrackList = arrayListOf<Track>()
-    private val searchHistoryTrackListAdapter = TrackAdapter(searchHistoryTrackList)
+    private val trackListAdapter = TrackAdapter()
+    private val searchHistoryTrackListAdapter = TrackAdapter()
 
     private lateinit var searchHistory: SearchHistory
 
@@ -53,22 +47,32 @@ class SearchActivity : AppCompatActivity() {
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        searchHistory =
-            SearchHistory(getSharedPreferences(SEARCH_HISTORY_SHARED_PREFERENCES_KEY, MODE_PRIVATE))
+        val searchHistorySharedPreferences =
+            getSharedPreferences(SEARCH_HISTORY_SHARED_PREFERENCES_KEY, MODE_PRIVATE)
+
+        searchHistory = SearchHistory(searchHistorySharedPreferences)
 
         trackListAdapter.trackClickListener = {
             searchHistory.addTrack(it)
-            searchHistoryTrackList = searchHistory.getSearchHistory()
+
+            searchHistoryTrackListAdapter.trackList.clear()
+            searchHistoryTrackListAdapter.trackList.addAll(searchHistory.getSearchHistory())
             searchHistoryTrackListAdapter.notifyDataSetChanged()
         }
-        binding.trackListRecyclerView.adapter = trackListAdapter
 
+        binding.trackListRecyclerView.adapter = trackListAdapter
         binding.searchHistoryListRecyclerView.adapter = searchHistoryTrackListAdapter
 
+        searchHistoryTrackListAdapter.trackList.clear()
+        searchHistoryTrackListAdapter.trackList.addAll(searchHistory.getSearchHistory())
+        searchHistoryTrackListAdapter.notifyDataSetChanged()
+
+        binding.searchHistory.visibility =
+            if (searchHistoryTrackListAdapter.trackList.isEmpty()) View.GONE else View.VISIBLE
+
         binding.searchHistoryClearButton.setOnClickListener {
-            searchHistoryTrackList.clear()
             searchHistory.clear()
-            searchHistoryTrackListAdapter.notifyDataSetChanged()
+            binding.searchHistory.visibility = View.GONE
         }
 
         binding.searchTitle.setOnClickListener {
@@ -81,8 +85,16 @@ class SearchActivity : AppCompatActivity() {
 
             hideKeyboard()
             hidePlaceHolder()
-            trackList.clear()
+            trackListAdapter.trackList.clear()
             trackListAdapter.notifyDataSetChanged()
+        }
+
+        searchHistorySharedPreferences.registerOnSharedPreferenceChangeListener { _, key ->
+            if (key == SearchHistory.ARRAY_LIST_TRACK_KEY) {
+                searchHistoryTrackListAdapter.trackList.clear()
+                searchHistoryTrackListAdapter.trackList.addAll(searchHistory.getSearchHistory())
+                searchHistoryTrackListAdapter.notifyDataSetChanged()
+            }
         }
 
         binding.searchText.addTextChangedListener(object : TextWatcher {
@@ -105,7 +117,10 @@ class SearchActivity : AppCompatActivity() {
 
         binding.searchText.setOnFocusChangeListener { _, hasFocus ->
             binding.searchHistory.visibility =
-                if (hasFocus && binding.searchText.text.isEmpty()) View.VISIBLE else View.GONE
+                if (hasFocus && binding.searchText.text.isEmpty() && searchHistoryTrackListAdapter.trackList.isNotEmpty())
+                    View.VISIBLE
+                else
+                    View.GONE
         }
 
         binding.searchText.setOnEditorActionListener { _, actionId, _ ->
@@ -114,16 +129,6 @@ class SearchActivity : AppCompatActivity() {
             }
             false
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        searchHistoryTrackList.addAll(searchHistory.getSearchHistory())
-    }
-
-    override fun onStop() {
-        super.onStop()
-        searchHistory.saveSearchHistory(searchHistoryTrackList)
     }
 
     private fun hideKeyboard() {
@@ -149,14 +154,14 @@ class SearchActivity : AppCompatActivity() {
             @SuppressLint("NotifyDataSetChanged")
             override fun onResponse(call: Call<TrackResponse>, response: Response<TrackResponse>) {
                 if (response.code() == 200) {
-                    trackList.clear()
+                    trackListAdapter.trackList.clear()
                     if (response.body()?.results?.isNotEmpty() == true) {
                         val responseList = response.body()?.results ?: emptyList()
-                        trackList.addAll(responseList)
+                        trackListAdapter.trackList.addAll(responseList)
                         trackListAdapter.notifyDataSetChanged()
                     }
-                    if (trackList.isEmpty()) {
-                        trackList.clear()
+                    if (trackListAdapter.trackList.isEmpty()) {
+                        trackListAdapter.trackList.clear()
                         trackListAdapter.notifyDataSetChanged()
                         showPlaceHolder(PlaceHolderType.NOT_FOUND)
                     }
@@ -207,5 +212,6 @@ class SearchActivity : AppCompatActivity() {
     companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
         const val BASE_URL = "https://itunes.apple.com"
+        const val SEARCH_HISTORY_SHARED_PREFERENCES_KEY = "SEARCH_HISTORY_SHARED_PREFERENCES_KEY"
     }
 }

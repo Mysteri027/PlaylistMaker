@@ -11,10 +11,11 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.model.Track
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
-class TrackAdapter(
-    private val trackList: List<Track>
-) : RecyclerView.Adapter<TrackViewHolder>() {
+class TrackAdapter : RecyclerView.Adapter<TrackViewHolder>() {
+
+    var trackList: ArrayList<Track> = arrayListOf()
 
     var trackClickListener: ((Track) -> Unit)? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {

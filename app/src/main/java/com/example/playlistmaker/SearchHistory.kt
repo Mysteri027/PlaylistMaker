@@ -16,7 +16,7 @@ class SearchHistory(
         return gson.fromJson(json, arrayTrackType) ?: arrayListOf()
     }
 
-    fun saveSearchHistory(tracks: ArrayList<Track>) {
+    private fun saveSearchHistory(tracks: ArrayList<Track>) {
         val json = gson.toJson(tracks, arrayTrackType)
         sharedPreferences.edit().putString(ARRAY_LIST_TRACK_KEY, json).apply()
     }
@@ -30,7 +30,7 @@ class SearchHistory(
 
         tracks.add(0, track)
 
-        while(tracks.size > 10) {
+        while(tracks.size > MAX_SEARCH_HISTORY_SIZE) {
             tracks.removeLast()
         }
 
@@ -38,10 +38,11 @@ class SearchHistory(
     }
 
     fun clear() {
-        sharedPreferences.edit().remove(ARRAY_LIST_TRACK_KEY).apply()
+        sharedPreferences.edit().putString(ARRAY_LIST_TRACK_KEY, null).apply()
     }
 
     companion object {
         const val ARRAY_LIST_TRACK_KEY = "ARRAY_LIST_TRACK_KEY"
+        private const val MAX_SEARCH_HISTORY_SIZE = 10
     }
 }
