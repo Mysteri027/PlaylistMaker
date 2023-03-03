@@ -21,4 +21,9 @@
     <string name="network_error">Проблемы со связью</string>
     <string name="fail_download">Загрузка не удалась. Проверьте подключение к интернету</string>
     <string name="update">Обновить</string>
+    <string name="share_button">Share button</string>
+    <string name="support_button">Support button</string>
+    <string name="arrow_forward_button">Arrow forward button</string>
+    <string name="you_searched">Вы искали</string>
+    <string name="clear_history">Очистить историю</string>
 </resources>

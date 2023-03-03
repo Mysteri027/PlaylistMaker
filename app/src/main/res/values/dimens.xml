@@ -28,5 +28,11 @@
     <dimen name="search_screen_corner_radius">54dp</dimen>
     <dimen name="search_screen_text_size">14sp</dimen>
     <dimen name="search_screen_margin_top">24dp</dimen>
+    <dimen name="search_history_text_margin_top">32dp</dimen>
+    <dimen name="search_history_text_size">19sp</dimen>
+    <dimen name="search_history_list_recycler_view_margin_top">8dp</dimen>
+    <dimen name="search_history_clear_button_margin_bottom">24dp</dimen>
+    <dimen name="search_history_clear_button_text_size">14sp</dimen>
+    <dimen name="search_history_clear_button_corner_radius">54dp</dimen>
 
 </resources>

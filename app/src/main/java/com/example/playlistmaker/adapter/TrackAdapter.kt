@@ -8,50 +8,46 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
+import com.example.playlistmaker.databinding.TrackItemBinding
 import com.example.playlistmaker.model.Track
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
-class TrackAdapter(
-    private val trackList: List<Track>
-) : RecyclerView.Adapter<TrackViewHolder>() {
+class TrackAdapter : RecyclerView.Adapter<TrackViewHolder>() {
 
+    var trackList: ArrayList<Track> = arrayListOf()
+
+    var trackClickListener: ((Track) -> Unit)? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
-        return TrackViewHolder(parent)
+        val binding = TrackItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return TrackViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
-        holder.bind(trackList[position])
+        val track = trackList[position]
+        holder.bind(track)
+        holder.itemView.setOnClickListener {
+            trackClickListener?.invoke(track)
+        }
     }
 
     override fun getItemCount() = trackList.size
 }
 
-class TrackViewHolder(parentView: ViewGroup) : RecyclerView.ViewHolder(
-    LayoutInflater.from(parentView.context)
-        .inflate(R.layout.track_item, parentView, false)
-) {
-
-    private val trackCover = itemView.findViewById<ImageView>(R.id.track_cover)
-    private val trackName = itemView.findViewById<TextView>(R.id.track_name)
-    private val trackArtist = itemView.findViewById<TextView>(R.id.track_artist_name)
-    private val trackTime = itemView.findViewById<TextView>(R.id.track_time)
+class TrackViewHolder(private val binding: TrackItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(track: Track) {
 
         val cornerRadius =
             itemView.resources.getDimensionPixelSize(R.dimen.search_screen_image_corner_radius)
 
-        Glide.with(itemView)
-            .load(track.artworkUrl100)
-            .placeholder(R.drawable.track_placeholder)
-            .centerCrop()
-            .transform(RoundedCorners(cornerRadius))
-            .into(trackCover)
+        Glide.with(itemView).load(track.artworkUrl100).placeholder(R.drawable.track_placeholder)
+            .centerCrop().transform(RoundedCorners(cornerRadius)).into(binding.trackCover)
 
-        trackName.text = track.trackName
-        trackArtist.text = track.artistName
-        trackTime.text =
+        binding.trackName.text = track.trackName
+        binding.trackArtistName.text = track.artistName
+        binding.trackTime.text =
             SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis.toLong())
     }
 }

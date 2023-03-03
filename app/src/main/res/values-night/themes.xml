@@ -36,5 +36,9 @@
         <item name="search_screen_item_track_time_color">@color/white</item>
         <item name="search_screen_not_found_image_color">@color/white</item>
 
+        <item name="search_screen_search_history_text_color">@color/yp_white</item>
+        <item name="search_screen_search_history_button_color">@color/yp_white</item>
+        <item name="search_screen_search_history_button_text_color">@color/yp_black</item>
+
     </style>
 </resources>

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     style="@style/SettingsScreenContainer">
 
 
@@ -19,12 +18,9 @@
             style="@style/SettingsScreenText"
             android:text="@string/dark_theme" />
 
-        <Switch
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/switch_theme_button"
-            style="@style/SettingsScreenImageButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:ignore="UseSwitchCompatOrMaterialXml,TouchTargetSizeCheck" />
+            style="@style/SettingsScreenImageButton" />
 
     </FrameLayout>
 
@@ -39,7 +35,8 @@
         <ImageView
             android:id="@+id/share_button"
             style="@style/SettingsScreenImageButton"
-            android:src="@drawable/share_icon" />
+            android:src="@drawable/share_icon"
+            android:contentDescription="@string/share_button" />
 
     </FrameLayout>
 
@@ -54,7 +51,8 @@
         <ImageView
             android:id="@+id/support_button"
             style="@style/SettingsScreenImageButton"
-            android:src="@drawable/support_icon" />
+            android:src="@drawable/support_icon"
+            android:contentDescription="@string/support_button" />
 
     </FrameLayout>
 
@@ -69,7 +67,8 @@
         <ImageView
             android:id="@+id/arrow_forward_button"
             style="@style/SettingsScreenImageButton"
-            android:src="@drawable/arrow_forward_icon" />
+            android:src="@drawable/arrow_forward_icon"
+            android:contentDescription="@string/arrow_forward_button" />
 
     </FrameLayout>
 
