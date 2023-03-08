@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Base application theme. -->
     <style name="Theme.PlaylistMaker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
@@ -39,6 +39,12 @@
         <item name="search_screen_search_history_text_color">@color/yp_white</item>
         <item name="search_screen_search_history_button_color">@color/yp_white</item>
         <item name="search_screen_search_history_button_text_color">@color/yp_black</item>
+
+        <item name="track_screen_background">@color/yp_black</item>
+        <item name="track_screen_track_name_color">@color/yp_white</item>
+        <item name="track_screen_track_artist_color">@color/yp_white</item>
+        <item name="track_screen_text_color">@color/yp_text_gray</item>
+        <item name="track_screen_text_value_color">@color/white</item>
 
     </style>
 </resources>

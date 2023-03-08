@@ -25,4 +25,10 @@
     <attr name="search_screen_search_history_text_color" format="reference" />
     <attr name="search_screen_search_history_button_color" format="reference" />
     <attr name="search_screen_search_history_button_text_color" format="reference" />
+
+    <attr name="track_screen_background" format="reference" />
+    <attr name="track_screen_track_name_color" format="reference" />
+    <attr name="track_screen_track_artist_color" format="reference" />
+    <attr name="track_screen_text_color" format="reference" />
+    <attr name="track_screen_text_value_color" format="reference" />
 </resources>

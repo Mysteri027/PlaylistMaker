@@ -38,5 +38,11 @@
         <item name="search_screen_search_history_text_color">@color/yp_black</item>
         <item name="search_screen_search_history_button_color">@color/yp_black</item>
         <item name="search_screen_search_history_button_text_color">@color/white</item>
+
+        <item name="track_screen_background">@color/yp_white</item>
+        <item name="track_screen_track_name_color">@color/black</item>
+        <item name="track_screen_track_artist_color">@color/black</item>
+        <item name="track_screen_text_color">@color/yp_text_gray</item>
+        <item name="track_screen_text_value_color">@color/black</item>
     </style>
 </resources>
