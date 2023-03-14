@@ -53,5 +53,7 @@
     <dimen name="track_screen_like_button_margin_end">8dp</dimen>
     <dimen name="track_screen_current_time_margin_top">12dp</dimen>
     <dimen name="track_screen_current_time_text_size">14sp</dimen>
+    <dimen name="track_cover_corner_radius">8dp</dimen>
+    <dimen name="track_screen_name_margin_start">8dp</dimen>
 
 </resources>

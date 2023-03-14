@@ -5,6 +5,7 @@ import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityTrackBinding
 import com.example.playlistmaker.model.Track
@@ -30,9 +31,13 @@ class TrackActivity : AppCompatActivity() {
 
         val trackCoverUrl = track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg")
 
+        val trackCoverCornerRadius =
+            binding.root.resources.getDimensionPixelSize(R.dimen.track_cover_corner_radius)
+
         Glide.with(binding.root)
             .load(trackCoverUrl)
             .placeholder(R.drawable.track_placeholder)
+            .transform(RoundedCorners(trackCoverCornerRadius))
             .into(binding.trackScreenCover)
 
         binding.trackScreenName.text = track.trackName
@@ -43,7 +48,8 @@ class TrackActivity : AppCompatActivity() {
         ).format(track.trackTimeMillis.toLong())
 
         binding.trackScreenAlbumValue.text = track.collectionName
-        binding.trackScreenYearValue.text = track.releaseDate.removeRange(4, track.releaseDate.length)
+        binding.trackScreenYearValue.text =
+            track.releaseDate.removeRange(4, track.releaseDate.length)
         binding.trackScreenGenreValue.text = track.primaryGenreName
         binding.trackScreenCountryValue.text = track.country
 
