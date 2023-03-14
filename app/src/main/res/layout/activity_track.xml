@@ -128,6 +128,7 @@
             android:id="@+id/track_screen_duration"
             style="@style/TrackScreenText"
             android:layout_marginTop="40dp"
+            android:layout_marginEnd="@dimen/margin_8dp"
             android:text="@string/duration"
             android:textColor="?attr/track_screen_text_color"
             app:layout_constraintBottom_toTopOf="@id/track_screen_album"
@@ -137,10 +138,14 @@
         <TextView
             android:id="@+id/track_screen_duration_value"
             style="@style/TrackScreenText"
+            android:layout_width="0dp"
             android:layout_marginTop="40dp"
+            android:gravity="end"
+            android:maxLines="1"
             android:textColor="?attr/track_screen_text_value_color"
             app:layout_constraintBottom_toTopOf="@id/track_screen_album_value"
             app:layout_constraintEnd_toStartOf="@id/right_guideline"
+            app:layout_constraintStart_toEndOf="@id/track_screen_duration"
             app:layout_constraintTop_toBottomOf="@id/track_screen_current_time"
             tools:text="5:35" />
 
@@ -156,9 +161,13 @@
         <TextView
             android:id="@+id/track_screen_album_value"
             style="@style/TrackScreenText"
+            android:layout_width="0dp"
+            android:gravity="end"
+            android:maxLines="1"
             android:textColor="?attr/track_screen_text_value_color"
             app:layout_constraintBottom_toTopOf="@id/track_screen_year_value"
             app:layout_constraintEnd_toStartOf="@id/right_guideline"
+            app:layout_constraintStart_toEndOf="@id/track_screen_album"
             app:layout_constraintTop_toBottomOf="@id/track_screen_duration_value"
             tools:text="Yesterday (Remastered 2009)" />
 
@@ -192,9 +201,13 @@
         <TextView
             android:id="@+id/track_screen_genre_value"
             style="@style/TrackScreenText"
+            android:layout_width="0dp"
+            android:gravity="end"
+            android:maxLines="1"
             android:textColor="?attr/track_screen_text_value_color"
             app:layout_constraintBottom_toTopOf="@id/track_screen_country_value"
             app:layout_constraintEnd_toStartOf="@id/right_guideline"
+            app:layout_constraintStart_toEndOf="@id/track_screen_genre"
             app:layout_constraintTop_toBottomOf="@id/track_screen_year_value"
             tools:text="Rock" />
 
@@ -211,9 +224,13 @@
         <TextView
             android:id="@+id/track_screen_country_value"
             style="@style/TrackScreenText"
+            android:layout_width="0dp"
+            android:gravity="end"
+            android:maxLines="1"
             android:textColor="?attr/track_screen_text_value_color"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/right_guideline"
+            app:layout_constraintStart_toEndOf="@id/track_screen_country"
             app:layout_constraintTop_toBottomOf="@id/track_screen_genre_value"
             tools:text="Великобритания" />
     </androidx.constraintlayout.widget.ConstraintLayout>
