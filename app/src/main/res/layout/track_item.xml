@@ -23,7 +23,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/track_name"
+            android:id="@+id/track__name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/track_item_name_margin_top"
@@ -40,7 +40,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/track_artist_name"
+                android:id="@+id/track__artist_name"
                 style="@style/SearchScreenTrackItemArtistAndTime"
                 android:textColor="?attr/search_screen_item_artist_name_color"
                 tools:text="The Beatles" />

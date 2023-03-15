@@ -35,4 +35,26 @@
     <dimen name="search_history_clear_button_text_size">14sp</dimen>
     <dimen name="search_history_clear_button_corner_radius">54dp</dimen>
 
+    <dimen name="constraint_guide_begin">16dp</dimen>
+    <dimen name="constraint_guide_end">16dp</dimen>
+    <dimen name="track_screen_back_button_margin_start">4dp</dimen>
+    <dimen name="track_screen_back_button_margin_top">20dp</dimen>
+    <dimen name="track_screen_cover_layout_width">312dp</dimen>
+    <dimen name="track_screen_cover_layout_height">312dp</dimen>
+    <dimen name="track_screen_cover_margin_start">8dp</dimen>
+    <dimen name="track_screen_cover_margin_top">32dp</dimen>
+    <dimen name="track_screen_cover_margin_end">8dp</dimen>
+    <dimen name="track_screen_name_margin_top">24dp</dimen>
+    <dimen name="track_screen_name_text_size">22sp</dimen>
+    <dimen name="track_screen_artist_name_margin_top">12dp</dimen>
+    <dimen name="track_screen_artist_name_text_size">14sp</dimen>
+    <dimen name="track_screen_add_button_margin_start">8dp</dimen>
+    <dimen name="track_screen_add_button_margin_top">54dp</dimen>
+    <dimen name="track_screen_like_button_margin_end">8dp</dimen>
+    <dimen name="track_screen_current_time_margin_top">12dp</dimen>
+    <dimen name="track_screen_current_time_text_size">14sp</dimen>
+    <dimen name="track_cover_corner_radius">8dp</dimen>
+    <dimen name="track_screen_name_margin_start">8dp</dimen>
+    <dimen name="margin_8dp">8dp</dimen>
+
 </resources>

@@ -1,6 +1,7 @@
 package com.example.playlistmaker.activity
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,6 +14,7 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.SearchHistory
 import com.example.playlistmaker.adapter.TrackAdapter
 import com.example.playlistmaker.databinding.ActivitySearchBinding
+import com.example.playlistmaker.model.Track
 import com.example.playlistmaker.network.ITunesSearchAPIService
 import com.example.playlistmaker.network.PlaceHolderType
 import com.example.playlistmaker.network.TrackResponse
@@ -52,8 +54,14 @@ class SearchActivity : AppCompatActivity() {
 
         searchHistory = SearchHistory(searchHistorySharedPreferences)
 
+        searchHistoryTrackListAdapter.trackClickListener = {
+            openTrackScreen(it)
+        }
+
         trackListAdapter.trackClickListener = {
             searchHistory.addTrack(it)
+
+            openTrackScreen(it)
 
             searchHistoryTrackListAdapter.trackList.clear()
             searchHistoryTrackListAdapter.trackList.addAll(searchHistory.getSearchHistory())
@@ -129,6 +137,12 @@ class SearchActivity : AppCompatActivity() {
             }
             false
         }
+    }
+
+    private fun openTrackScreen(track: Track) {
+        val trackIntent = Intent(this, TrackActivity::class.java)
+        trackIntent.putExtra(TRACK_KEY, track)
+        startActivity(trackIntent)
     }
 
     private fun hideKeyboard() {
@@ -213,5 +227,6 @@ class SearchActivity : AppCompatActivity() {
         const val SEARCH_TEXT = "SEARCH_TEXT"
         const val BASE_URL = "https://itunes.apple.com"
         const val SEARCH_HISTORY_SHARED_PREFERENCES_KEY = "SEARCH_HISTORY_SHARED_PREFERENCES_KEY"
+        const val TRACK_KEY = "TRACK_KEY"
     }
 }
