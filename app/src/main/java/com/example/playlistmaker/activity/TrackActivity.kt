@@ -1,8 +1,13 @@
+@file:Suppress("DEPRECATION", "UNCHECKED_CAST")
+
 package com.example.playlistmaker.activity
 
 import android.app.Activity
+import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -11,11 +16,18 @@ import com.example.playlistmaker.databinding.ActivityTrackBinding
 import com.example.playlistmaker.model.Track
 import java.io.Serializable
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 
 class TrackActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityTrackBinding
+
+    private var mediaPlayer = MediaPlayer()
+    private var playerState = STATE_DEFAULT
+
+    private val handler = Handler(Looper.getMainLooper())
+
+    private lateinit var trackPreviewUrl: String
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,6 +43,10 @@ class TrackActivity : AppCompatActivity() {
 
         val trackCoverUrl = track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg")
 
+        trackPreviewUrl = track.previewUrl
+
+        preparePlayer()
+
         val trackCoverCornerRadius =
             binding.root.resources.getDimensionPixelSize(R.dimen.track_cover_corner_radius)
 
@@ -40,20 +56,95 @@ class TrackActivity : AppCompatActivity() {
             .transform(RoundedCorners(trackCoverCornerRadius))
             .into(binding.trackScreenCover)
 
-        binding.trackScreenName.text = track.trackName
-        binding.trackScreenArtistName.text = track.artistName
-        binding.trackScreenDurationValue.text = SimpleDateFormat(
+        with(binding) {
+            trackScreenName.text = track.trackName
+            trackScreenArtistName.text = track.artistName
+            trackScreenDurationValue.text = SimpleDateFormat(
+                "mm:ss",
+                Locale.getDefault()
+            ).format(track.trackTimeMillis.toLong())
+
+            trackScreenAlbumValue.text = track.collectionName
+            trackScreenYearValue.text =
+                track.releaseDate.removeRange(4, track.releaseDate.length)
+            trackScreenGenreValue.text = track.primaryGenreName
+            trackScreenCountryValue.text = track.country
+
+            trackScreenPlayButton.setOnClickListener {
+                playbackControl()
+            }
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        pausePlayer()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaPlayer.release()
+    }
+
+    private fun preparePlayer() {
+        mediaPlayer.setDataSource(trackPreviewUrl)
+        mediaPlayer.prepareAsync()
+        mediaPlayer.setOnPreparedListener {
+            binding.trackScreenPlayButton.isEnabled = true
+            playerState = STATE_PREPARED
+        }
+
+        mediaPlayer.setOnCompletionListener {
+            playerState = STATE_PREPARED
+            binding.trackScreenPlayButton.setImageResource(R.drawable.play_button)
+            setCurrentTime(0L)
+        }
+    }
+
+    private fun startPlayer() {
+        mediaPlayer.start()
+        binding.trackScreenPlayButton.setImageResource(R.drawable.pause_button)
+        playerState = STATE_PLAYING
+
+        handler.postDelayed(object : Runnable {
+            override fun run() {
+                setCurrentTime(mediaPlayer.currentPosition.toLong())
+                handler.postDelayed(this, DELAY)
+            }
+        }, DELAY)
+    }
+
+    private fun pausePlayer() {
+        mediaPlayer.pause()
+        binding.trackScreenPlayButton.setImageResource(R.drawable.play_button)
+        playerState = STATE_PAUSED
+    }
+
+    private fun setCurrentTime(milliseconds: Long) {
+        binding.trackScreenCurrentTime.text = SimpleDateFormat(
             "mm:ss",
             Locale.getDefault()
-        ).format(track.trackTimeMillis.toLong())
+        ).format(milliseconds)
+    }
 
-        binding.trackScreenAlbumValue.text = track.collectionName
-        binding.trackScreenYearValue.text =
-            track.releaseDate.removeRange(4, track.releaseDate.length)
-        binding.trackScreenGenreValue.text = track.primaryGenreName
-        binding.trackScreenCountryValue.text = track.country
+    private fun playbackControl() {
+        when (playerState) {
+            STATE_PLAYING -> {
+                pausePlayer()
+            }
 
+            STATE_PREPARED, STATE_PAUSED -> {
+                startPlayer()
+            }
+        }
+    }
 
+    companion object {
+        private const val STATE_DEFAULT = 0
+        private const val STATE_PREPARED = 1
+        private const val STATE_PLAYING = 2
+        private const val STATE_PAUSED = 3
+        private const val DELAY = 1000L
     }
 }
 

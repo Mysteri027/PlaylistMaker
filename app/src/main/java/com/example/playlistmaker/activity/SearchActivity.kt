@@ -3,6 +3,8 @@ package com.example.playlistmaker.activity
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -34,6 +36,11 @@ class SearchActivity : AppCompatActivity() {
     private val trackListAdapter = TrackAdapter()
     private val searchHistoryTrackListAdapter = TrackAdapter()
 
+    private val handler = Handler(Looper.getMainLooper())
+
+    private var isClickAllowed = true
+    private val searchRunnable = Runnable { findTracks() }
+
     private lateinit var searchHistory: SearchHistory
 
     // Retrofit
@@ -55,13 +62,17 @@ class SearchActivity : AppCompatActivity() {
         searchHistory = SearchHistory(searchHistorySharedPreferences)
 
         searchHistoryTrackListAdapter.trackClickListener = {
-            openTrackScreen(it)
+            if (clickDebounce()) {
+                openTrackScreen(it)
+            }
         }
 
         trackListAdapter.trackClickListener = {
             searchHistory.addTrack(it)
 
-            openTrackScreen(it)
+            if (clickDebounce()) {
+                openTrackScreen(it)
+            }
 
             searchHistoryTrackListAdapter.trackList.clear()
             searchHistoryTrackListAdapter.trackList.addAll(searchHistory.getSearchHistory())
@@ -115,8 +126,14 @@ class SearchActivity : AppCompatActivity() {
                     searchInputText = s.toString()
                 }
 
+                if (s!!.isNotEmpty()) {
+                    searchDebounce()
+                }
+
+                binding.trackListRecyclerView.visibility = View.GONE
+
                 binding.searchHistory.visibility =
-                    if (binding.searchText.hasFocus() && s?.isEmpty() == true) View.VISIBLE
+                    if (binding.searchText.hasFocus() && s.isEmpty()) View.VISIBLE
                     else View.GONE
             }
 
@@ -133,10 +150,30 @@ class SearchActivity : AppCompatActivity() {
 
         binding.searchText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                findTracks(searchInputText)
+                findTracks()
             }
             false
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        handler.removeCallbacks(searchRunnable)
+    }
+
+    private fun clickDebounce(): Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
+        }
+
+        return current
+    }
+
+    private fun searchDebounce() {
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, SEARCH_DELAY)
     }
 
     private fun openTrackScreen(track: Track) {
@@ -162,11 +199,15 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    private fun findTracks(term: String) {
+    private fun findTracks() {
         hidePlaceHolder()
-        iTunesSearchAPIService.search(term).enqueue(object : Callback<TrackResponse> {
+        binding.searchProgressBar.visibility = View.VISIBLE
+        binding.trackListRecyclerView.visibility = View.VISIBLE
+        iTunesSearchAPIService.search(searchInputText).enqueue(object : Callback<TrackResponse> {
             @SuppressLint("NotifyDataSetChanged")
             override fun onResponse(call: Call<TrackResponse>, response: Response<TrackResponse>) {
+
+                binding.searchProgressBar.visibility = View.GONE
                 if (response.code() == 200) {
                     trackListAdapter.trackList.clear()
                     if (response.body()?.results?.isNotEmpty() == true) {
@@ -201,10 +242,11 @@ class SearchActivity : AppCompatActivity() {
             PlaceHolderType.NOT_FOUND -> {
                 binding.notFoundPlaceholder.visibility = View.VISIBLE
             }
+
             PlaceHolderType.NETWORK_ERROR -> {
                 binding.networkErrorPlaceholder.visibility = View.VISIBLE
                 binding.updateButton.setOnClickListener {
-                    findTracks(searchInputText)
+                    findTracks()
                 }
             }
         }
@@ -228,5 +270,7 @@ class SearchActivity : AppCompatActivity() {
         const val BASE_URL = "https://itunes.apple.com"
         const val SEARCH_HISTORY_SHARED_PREFERENCES_KEY = "SEARCH_HISTORY_SHARED_PREFERENCES_KEY"
         const val TRACK_KEY = "TRACK_KEY"
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
+        private const val SEARCH_DELAY = 2000L
     }
 }

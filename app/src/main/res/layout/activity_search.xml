@@ -57,8 +57,18 @@
             tools:listitem="@layout/track_item"
             tools:visibility="gone" />
 
+        <ProgressBar
+            android:id="@+id/search_progress_bar"
+            android:visibility="gone"
+            android:layout_width="@dimen/progress_bar_size"
+            android:layout_height="@dimen/progress_bar_size"
+            android:layout_marginTop="@dimen/progress_bar_margin_top"
+            android:indeterminateTint="@color/yp_blue"
+            android:layout_gravity="center_horizontal"/>
+
         <!--        Search history-->
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:visibility="visible"
             android:id="@+id/search_history"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
