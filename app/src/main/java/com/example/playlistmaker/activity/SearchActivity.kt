@@ -130,7 +130,7 @@ class SearchActivity : AppCompatActivity() {
                     searchDebounce()
                 }
 
-                binding.trackListRecyclerView.visibility = View.GONE
+                binding.trackListRecyclerView.visibility = View.VISIBLE
 
                 binding.searchHistory.visibility =
                     if (binding.searchText.hasFocus() && s.isEmpty()) View.VISIBLE
@@ -202,12 +202,13 @@ class SearchActivity : AppCompatActivity() {
     private fun findTracks() {
         hidePlaceHolder()
         binding.searchProgressBar.visibility = View.VISIBLE
-        binding.trackListRecyclerView.visibility = View.VISIBLE
+        binding.trackListRecyclerView.visibility = View.GONE
         iTunesSearchAPIService.search(searchInputText).enqueue(object : Callback<TrackResponse> {
             @SuppressLint("NotifyDataSetChanged")
             override fun onResponse(call: Call<TrackResponse>, response: Response<TrackResponse>) {
 
                 binding.searchProgressBar.visibility = View.GONE
+                binding.trackListRecyclerView.visibility = View.VISIBLE
                 if (response.code() == 200) {
                     trackListAdapter.trackList.clear()
                     if (response.body()?.results?.isNotEmpty() == true) {

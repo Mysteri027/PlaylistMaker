@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -26,6 +27,13 @@ class TrackActivity : AppCompatActivity() {
     private var playerState = STATE_DEFAULT
 
     private val handler = Handler(Looper.getMainLooper())
+
+    private val currentTimeRunnable = object : Runnable {
+        override fun run() {
+            setCurrentTime(mediaPlayer.currentPosition.toLong())
+            handler.postDelayed(this, DELAY)
+        }
+    }
 
     private lateinit var trackPreviewUrl: String
 
@@ -97,6 +105,7 @@ class TrackActivity : AppCompatActivity() {
         mediaPlayer.setOnCompletionListener {
             playerState = STATE_PREPARED
             binding.trackScreenPlayButton.setImageResource(R.drawable.play_button)
+            handler.removeCallbacks(currentTimeRunnable)
             setCurrentTime(0L)
         }
     }
@@ -105,19 +114,14 @@ class TrackActivity : AppCompatActivity() {
         mediaPlayer.start()
         binding.trackScreenPlayButton.setImageResource(R.drawable.pause_button)
         playerState = STATE_PLAYING
-
-        handler.postDelayed(object : Runnable {
-            override fun run() {
-                setCurrentTime(mediaPlayer.currentPosition.toLong())
-                handler.postDelayed(this, DELAY)
-            }
-        }, DELAY)
+        handler.postDelayed(currentTimeRunnable, DELAY)
     }
 
     private fun pausePlayer() {
         mediaPlayer.pause()
         binding.trackScreenPlayButton.setImageResource(R.drawable.play_button)
         playerState = STATE_PAUSED
+        handler.removeCallbacks(currentTimeRunnable)
     }
 
     private fun setCurrentTime(milliseconds: Long) {
