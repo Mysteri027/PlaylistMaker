@@ -1,4 +1,4 @@
-package com.example.playlistmaker.activity
+package com.example.playlistmaker.presentation.ui.search
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -8,30 +8,28 @@ import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.example.playlistmaker.R
-import com.example.playlistmaker.SearchHistory
-import com.example.playlistmaker.adapter.TrackAdapter
+import com.example.playlistmaker.data.network.ITunesSearchAPIService
+import com.example.playlistmaker.data.repository.LocalStorageRepositoryImpl
+import com.example.playlistmaker.data.repository.NetworkRepositoryImpl
+import com.example.playlistmaker.data.searchhistory.SearchHistory
 import com.example.playlistmaker.databinding.ActivitySearchBinding
-import com.example.playlistmaker.model.Track
-import com.example.playlistmaker.network.ITunesSearchAPIService
-import com.example.playlistmaker.network.PlaceHolderType
-import com.example.playlistmaker.network.TrackResponse
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.playlistmaker.domain.interactor.LocalStorageInteractor
+import com.example.playlistmaker.domain.interactor.NetworkInteractor
+import com.example.playlistmaker.domain.model.Track
+import com.example.playlistmaker.presentation.presenter.search.SearchScreenPresenter
+import com.example.playlistmaker.presentation.presenter.search.SearchScreenView
+import com.example.playlistmaker.presentation.ui.track.TrackActivity
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-class SearchActivity : AppCompatActivity() {
+class SearchActivity : AppCompatActivity(), SearchScreenView {
 
     private lateinit var binding: ActivitySearchBinding
-
-    private var searchInputText = ""
 
     private val trackListAdapter = TrackAdapter()
     private val searchHistoryTrackListAdapter = TrackAdapter()
@@ -50,6 +48,10 @@ class SearchActivity : AppCompatActivity() {
 
     private val iTunesSearchAPIService = retrofit.create(ITunesSearchAPIService::class.java)
 
+
+    private lateinit var presenter: SearchScreenPresenter
+
+
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,8 +60,18 @@ class SearchActivity : AppCompatActivity() {
 
         val searchHistorySharedPreferences =
             getSharedPreferences(SEARCH_HISTORY_SHARED_PREFERENCES_KEY, MODE_PRIVATE)
-
         searchHistory = SearchHistory(searchHistorySharedPreferences)
+
+        val networkRepository = NetworkRepositoryImpl(iTunesSearchAPIService)
+        val networkInteractor = NetworkInteractor(networkRepository)
+        val localStorageRepository = LocalStorageRepositoryImpl(searchHistory)
+        val localStorageInteractor = LocalStorageInteractor(localStorageRepository)
+
+        presenter = SearchScreenPresenter(
+            this,
+            networkInteractor,
+            localStorageInteractor
+        )
 
         searchHistoryTrackListAdapter.trackClickListener = {
             if (clickDebounce()) {
@@ -68,29 +80,25 @@ class SearchActivity : AppCompatActivity() {
         }
 
         trackListAdapter.trackClickListener = {
-            searchHistory.addTrack(it)
+            presenter.addTrackToHistory(it)
 
             if (clickDebounce()) {
                 openTrackScreen(it)
             }
 
-            searchHistoryTrackListAdapter.trackList.clear()
-            searchHistoryTrackListAdapter.trackList.addAll(searchHistory.getSearchHistory())
-            searchHistoryTrackListAdapter.notifyDataSetChanged()
+            updateTrackListHistory(searchHistory.getSearchHistory())
         }
 
         binding.trackListRecyclerView.adapter = trackListAdapter
         binding.searchHistoryListRecyclerView.adapter = searchHistoryTrackListAdapter
 
-        searchHistoryTrackListAdapter.trackList.clear()
-        searchHistoryTrackListAdapter.trackList.addAll(searchHistory.getSearchHistory())
-        searchHistoryTrackListAdapter.notifyDataSetChanged()
+        updateTrackListHistory(searchHistory.getSearchHistory())
 
         binding.searchHistory.visibility =
             if (searchHistoryTrackListAdapter.trackList.isEmpty()) View.GONE else View.VISIBLE
 
         binding.searchHistoryClearButton.setOnClickListener {
-            searchHistory.clear()
+            presenter.clearSearchHistory()
             binding.searchHistory.visibility = View.GONE
         }
 
@@ -99,21 +107,11 @@ class SearchActivity : AppCompatActivity() {
         }
 
         binding.buttonClear.setOnClickListener {
-            binding.searchText.setText("")
-            searchInputText = ""
-
-            hideKeyboard()
-            hidePlaceHolder()
-            trackListAdapter.trackList.clear()
-            trackListAdapter.notifyDataSetChanged()
+            presenter.clearButtonClicked()
         }
 
         searchHistorySharedPreferences.registerOnSharedPreferenceChangeListener { _, key ->
-            if (key == SearchHistory.ARRAY_LIST_TRACK_KEY) {
-                searchHistoryTrackListAdapter.trackList.clear()
-                searchHistoryTrackListAdapter.trackList.addAll(searchHistory.getSearchHistory())
-                searchHistoryTrackListAdapter.notifyDataSetChanged()
-            }
+            presenter.updateHistory(key, searchHistory.getSearchHistory())
         }
 
         binding.searchText.addTextChangedListener(object : TextWatcher {
@@ -121,10 +119,6 @@ class SearchActivity : AppCompatActivity() {
 
             override fun onTextChanged(s: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 binding.buttonClear.visibility = clearButtonVisibility(s)
-
-                if (binding.buttonClear.visibility == View.VISIBLE) {
-                    searchInputText = s.toString()
-                }
 
                 if (s!!.isNotEmpty()) {
                     searchDebounce()
@@ -146,13 +140,6 @@ class SearchActivity : AppCompatActivity() {
                     View.VISIBLE
                 else
                     View.GONE
-        }
-
-        binding.searchText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                findTracks()
-            }
-            false
         }
     }
 
@@ -176,10 +163,19 @@ class SearchActivity : AppCompatActivity() {
         handler.postDelayed(searchRunnable, SEARCH_DELAY)
     }
 
-    private fun openTrackScreen(track: Track) {
+    override fun openTrackScreen(track: Track) {
         val trackIntent = Intent(this, TrackActivity::class.java)
         trackIntent.putExtra(TRACK_KEY, track)
         startActivity(trackIntent)
+    }
+
+    override fun clearButtonClicked() {
+        binding.searchText.setText("")
+
+        hideKeyboard()
+        hidePlaceHolder()
+        trackListAdapter.trackList.clear()
+        trackListAdapter.notifyDataSetChanged()
     }
 
     private fun hideKeyboard() {
@@ -200,45 +196,23 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun findTracks() {
-        hidePlaceHolder()
-        binding.searchProgressBar.visibility = View.VISIBLE
-        binding.trackListRecyclerView.visibility = View.GONE
-        iTunesSearchAPIService.search(searchInputText).enqueue(object : Callback<TrackResponse> {
-            @SuppressLint("NotifyDataSetChanged")
-            override fun onResponse(call: Call<TrackResponse>, response: Response<TrackResponse>) {
-
-                binding.searchProgressBar.visibility = View.GONE
-                binding.trackListRecyclerView.visibility = View.VISIBLE
-                if (response.code() == 200) {
-                    trackListAdapter.trackList.clear()
-                    if (response.body()?.results?.isNotEmpty() == true) {
-                        val responseList = response.body()?.results ?: emptyList()
-                        trackListAdapter.trackList.addAll(responseList)
-                        trackListAdapter.notifyDataSetChanged()
-                    }
-                    if (trackListAdapter.trackList.isEmpty()) {
-                        trackListAdapter.trackList.clear()
-                        trackListAdapter.notifyDataSetChanged()
-                        showPlaceHolder(PlaceHolderType.NOT_FOUND)
-                    }
-                } else {
-                    showPlaceHolder(PlaceHolderType.NETWORK_ERROR)
-                }
-            }
-
-            override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
-                showPlaceHolder(PlaceHolderType.NETWORK_ERROR)
-            }
-
-        })
+        presenter.findTracks(binding.searchText.text.toString())
     }
 
-    private fun hidePlaceHolder() {
+    override fun setTrackListVisibility(visibility: Int) {
+        binding.trackListRecyclerView.visibility = visibility
+    }
+
+    override fun setProgressbarListVisibility(visibility: Int) {
+        binding.searchProgressBar.visibility = visibility
+    }
+
+    override fun hidePlaceHolder() {
         binding.notFoundPlaceholder.visibility = View.GONE
         binding.networkErrorPlaceholder.visibility = View.GONE
     }
 
-    private fun showPlaceHolder(placeHolderType: PlaceHolderType) {
+    override fun showPlaceHolder(placeHolderType: PlaceHolderType) {
         when (placeHolderType) {
             PlaceHolderType.NOT_FOUND -> {
                 binding.notFoundPlaceholder.visibility = View.VISIBLE
@@ -254,9 +228,23 @@ class SearchActivity : AppCompatActivity() {
 
     }
 
+    @SuppressLint("NotifyDataSetChanged")
+    override fun updateTrackListHistory(tracks: List<Track>) {
+        searchHistoryTrackListAdapter.trackList.clear()
+        searchHistoryTrackListAdapter.trackList.addAll(searchHistory.getSearchHistory())
+        searchHistoryTrackListAdapter.notifyDataSetChanged()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    override fun updateTrackList(tracks: List<Track>) {
+        trackListAdapter.trackList.clear()
+        trackListAdapter.trackList.addAll(tracks)
+        trackListAdapter.notifyDataSetChanged()
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString(SEARCH_TEXT, searchInputText)
+        outState.putString(SEARCH_TEXT, binding.searchText.text.toString())
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {

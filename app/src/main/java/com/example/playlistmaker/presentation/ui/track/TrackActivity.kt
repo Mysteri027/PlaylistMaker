@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION", "UNCHECKED_CAST")
 
-package com.example.playlistmaker.activity
+package com.example.playlistmaker.presentation.ui.track
 
 import android.app.Activity
 import android.media.MediaPlayer
@@ -8,13 +8,13 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityTrackBinding
-import com.example.playlistmaker.model.Track
+import com.example.playlistmaker.domain.model.Track
+import com.example.playlistmaker.presentation.ui.search.SearchActivity
 import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.Locale

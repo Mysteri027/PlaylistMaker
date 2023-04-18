@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="?attr/track_screen_background"
     android:paddingBottom="8dp"
-    tools:context=".activity.TrackActivity">
+    tools:context=".presentation.activity.TrackActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/SearchScreen"
-    tools:context=".activity.SearchActivity">
+    tools:context=".presentation.ui.search.SearchActivity">
 
     <TextView
         android:id="@+id/search_title"
