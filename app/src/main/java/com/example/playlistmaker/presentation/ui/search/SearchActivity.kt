@@ -11,20 +11,14 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.example.playlistmaker.Container
 import com.example.playlistmaker.R
-import com.example.playlistmaker.data.network.ITunesSearchAPIService
-import com.example.playlistmaker.data.repository.LocalStorageRepositoryImpl
-import com.example.playlistmaker.data.repository.NetworkRepositoryImpl
-import com.example.playlistmaker.data.searchhistory.SearchHistory
+import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.databinding.ActivitySearchBinding
-import com.example.playlistmaker.domain.interactor.LocalStorageInteractor
-import com.example.playlistmaker.domain.interactor.NetworkInteractor
 import com.example.playlistmaker.domain.model.Track
 import com.example.playlistmaker.presentation.presenter.search.SearchScreenPresenter
 import com.example.playlistmaker.presentation.presenter.search.SearchScreenView
 import com.example.playlistmaker.presentation.ui.track.TrackActivity
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 
 class SearchActivity : AppCompatActivity(), SearchScreenView {
@@ -35,19 +29,8 @@ class SearchActivity : AppCompatActivity(), SearchScreenView {
     private val searchHistoryTrackListAdapter = TrackAdapter()
 
     private val handler = Handler(Looper.getMainLooper())
-
     private var isClickAllowed = true
     private val searchRunnable = Runnable { findTracks() }
-
-    private lateinit var searchHistory: SearchHistory
-
-    // Retrofit
-    private val retrofit =
-        Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-    private val iTunesSearchAPIService = retrofit.create(ITunesSearchAPIService::class.java)
-
 
     private lateinit var presenter: SearchScreenPresenter
 
@@ -58,19 +41,10 @@ class SearchActivity : AppCompatActivity(), SearchScreenView {
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val searchHistorySharedPreferences =
-            getSharedPreferences(SEARCH_HISTORY_SHARED_PREFERENCES_KEY, MODE_PRIVATE)
-        searchHistory = SearchHistory(searchHistorySharedPreferences)
-
-        val networkRepository = NetworkRepositoryImpl(iTunesSearchAPIService)
-        val networkInteractor = NetworkInteractor(networkRepository)
-        val localStorageRepository = LocalStorageRepositoryImpl(searchHistory)
-        val localStorageInteractor = LocalStorageInteractor(localStorageRepository)
-
         presenter = SearchScreenPresenter(
             this,
-            networkInteractor,
-            localStorageInteractor
+            Creator.provideNetworkInteractor(),
+            Creator.provideLocalStorageInteractor()
         )
 
         searchHistoryTrackListAdapter.trackClickListener = {
@@ -86,13 +60,13 @@ class SearchActivity : AppCompatActivity(), SearchScreenView {
                 openTrackScreen(it)
             }
 
-            updateTrackListHistory(searchHistory.getSearchHistory())
+            updateTrackListHistory(presenter.getTrackHistoryList())
         }
 
         binding.trackListRecyclerView.adapter = trackListAdapter
         binding.searchHistoryListRecyclerView.adapter = searchHistoryTrackListAdapter
 
-        updateTrackListHistory(searchHistory.getSearchHistory())
+        updateTrackListHistory(presenter.getTrackHistoryList())
 
         binding.searchHistory.visibility =
             if (searchHistoryTrackListAdapter.trackList.isEmpty()) View.GONE else View.VISIBLE
@@ -110,8 +84,8 @@ class SearchActivity : AppCompatActivity(), SearchScreenView {
             presenter.clearButtonClicked()
         }
 
-        searchHistorySharedPreferences.registerOnSharedPreferenceChangeListener { _, key ->
-            presenter.updateHistory(key, searchHistory.getSearchHistory())
+        Container.trackHistorySharedPreferences.registerOnSharedPreferenceChangeListener { _, key ->
+            presenter.updateHistory(key, presenter.getTrackHistoryList())
         }
 
         binding.searchText.addTextChangedListener(object : TextWatcher {
@@ -169,6 +143,7 @@ class SearchActivity : AppCompatActivity(), SearchScreenView {
         startActivity(trackIntent)
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun clearButtonClicked() {
         binding.searchText.setText("")
 
@@ -231,7 +206,7 @@ class SearchActivity : AppCompatActivity(), SearchScreenView {
     @SuppressLint("NotifyDataSetChanged")
     override fun updateTrackListHistory(tracks: List<Track>) {
         searchHistoryTrackListAdapter.trackList.clear()
-        searchHistoryTrackListAdapter.trackList.addAll(searchHistory.getSearchHistory())
+        searchHistoryTrackListAdapter.trackList.addAll(presenter.getTrackHistoryList())
         searchHistoryTrackListAdapter.notifyDataSetChanged()
     }
 
@@ -256,8 +231,6 @@ class SearchActivity : AppCompatActivity(), SearchScreenView {
 
     companion object {
         const val SEARCH_TEXT = "SEARCH_TEXT"
-        const val BASE_URL = "https://itunes.apple.com"
-        const val SEARCH_HISTORY_SHARED_PREFERENCES_KEY = "SEARCH_HISTORY_SHARED_PREFERENCES_KEY"
         const val TRACK_KEY = "TRACK_KEY"
         private const val CLICK_DEBOUNCE_DELAY = 1000L
         private const val SEARCH_DELAY = 2000L

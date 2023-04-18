@@ -1,7 +1,6 @@
 package com.example.playlistmaker.presentation.presenter.search
 
 import android.view.View
-import com.example.playlistmaker.data.searchhistory.SearchHistory
 import com.example.playlistmaker.domain.interactor.LocalStorageInteractor
 import com.example.playlistmaker.domain.interactor.NetworkInteractor
 import com.example.playlistmaker.domain.model.Track
@@ -40,7 +39,7 @@ class SearchScreenPresenter(
     }
 
     fun updateHistory(key: String, tracks: List<Track>) {
-        if (key == SearchHistory.ARRAY_LIST_TRACK_KEY) {
+        if (key == ARRAY_LIST_TRACK_KEY) {
             view.updateTrackListHistory(tracks)
         }
     }
@@ -51,5 +50,13 @@ class SearchScreenPresenter(
 
     fun clearSearchHistory() {
         localStorageInteractor.clear()
+    }
+
+    fun getTrackHistoryList(): List<Track> {
+        return localStorageInteractor.getSearchHistory()
+    }
+
+    companion object {
+        const val ARRAY_LIST_TRACK_KEY = "ARRAY_LIST_TRACK_KEY"
     }
 }
