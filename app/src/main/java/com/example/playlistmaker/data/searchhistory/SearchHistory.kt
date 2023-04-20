@@ -1,7 +1,7 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.data.searchhistory
 
 import android.content.SharedPreferences
-import com.example.playlistmaker.model.Track
+import com.example.playlistmaker.domain.model.Track
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 
@@ -30,7 +30,7 @@ class SearchHistory(
 
         tracks.add(0, track)
 
-        while(tracks.size > MAX_SEARCH_HISTORY_SIZE) {
+        while (tracks.size > MAX_SEARCH_HISTORY_SIZE) {
             tracks.removeLast()
         }
 

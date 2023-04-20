@@ -1,4 +1,4 @@
-package com.example.playlistmaker.network
+package com.example.playlistmaker.presentation.ui.search
 
 enum class PlaceHolderType {
     NOT_FOUND,
