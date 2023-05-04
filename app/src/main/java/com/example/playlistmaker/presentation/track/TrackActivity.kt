@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION", "UNCHECKED_CAST")
 
-package com.example.playlistmaker.presentation.ui.track
+package com.example.playlistmaker.presentation.track
 
 import android.app.Activity
 import android.os.Build
@@ -8,31 +8,29 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.databinding.ActivityTrackBinding
 import com.example.playlistmaker.domain.model.Track
-import com.example.playlistmaker.presentation.presenter.track.TrackScreenPresenter
-import com.example.playlistmaker.presentation.presenter.track.TrackScreenView
-import com.example.playlistmaker.presentation.ui.search.SearchActivity
+import com.example.playlistmaker.presentation.search.SearchActivity
 import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class TrackActivity : AppCompatActivity(), TrackScreenView {
+class TrackActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityTrackBinding
-    private lateinit var presenter: TrackScreenPresenter
-
+    private lateinit var viewModel: TrackViewModel
     private var playerState = STATE_DEFAULT
 
     private val handler = Handler(Looper.getMainLooper())
 
     private val currentTimeRunnable = object : Runnable {
         override fun run() {
-            setCurrentTime(presenter.getCurrentPosition().toLong())
+            setCurrentTime(viewModel.getCurrentPosition().toLong())
             handler.postDelayed(this, DELAY)
         }
     }
@@ -44,10 +42,11 @@ class TrackActivity : AppCompatActivity(), TrackScreenView {
         binding = ActivityTrackBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        presenter = TrackScreenPresenter(
-            this,
-            Creator.provideMediaPlayerInteractor()
-        )
+        viewModel = ViewModelProvider(
+            this, TrackViewModelFactory(
+                mediaPlayerInteractor = Creator.provideMediaPlayerInteractor()
+            )
+        )[TrackViewModel::class.java]
 
         binding.trackScreenBackButton.setOnClickListener {
             finish()
@@ -55,11 +54,11 @@ class TrackActivity : AppCompatActivity(), TrackScreenView {
 
         val track = getSerializable(this, SearchActivity.TRACK_KEY, Track::class.java)
 
-        val trackCoverUrl = presenter.getTrackImage(track.artworkUrl100)
+        val trackCoverUrl = viewModel.getTrackImage(track.artworkUrl100)
 
         trackPreviewUrl = track.previewUrl
 
-        presenter.preparePlayer(trackPreviewUrl)
+        viewModel.preparePlayer(trackPreviewUrl)
 
         val trackCoverCornerRadius =
             binding.root.resources.getDimensionPixelSize(R.dimen.track_cover_corner_radius)
@@ -85,58 +84,75 @@ class TrackActivity : AppCompatActivity(), TrackScreenView {
             trackScreenCountryValue.text = track.country
 
             trackScreenPlayButton.setOnClickListener {
-                presenter.playbackControl()
+                when (playerState) {
+                    STATE_PLAYING -> {
+                        viewModel.pausePlayer()
+                    }
+
+                    STATE_PREPARED, STATE_PAUSED -> {
+                        viewModel.startPlayer()
+                    }
+                }
             }
+        }
+
+        viewModel.playerState.observe(this) {
+            when (it) {
+                is PlayerState.Started -> {
+                    setOnPlayerStarted()
+                }
+
+                is PlayerState.Paused -> {
+                    setOnPlayerPaused()
+                }
+
+                is PlayerState.Prepared -> {
+                    setOnMediaPlayerPrepared()
+                }
+            }
+        }
+
+        viewModel.isMediaPlayerComplete.observe(this) {
+            if (it) setMediaPlayerOnCompletion()
         }
     }
 
     override fun onPause() {
         super.onPause()
-        presenter.pausePlayer()
+        viewModel.pausePlayer()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        presenter.releasePlayer()
+        viewModel.releasePlayer()
     }
 
-    override fun setCurrentTime(milliseconds: Long) {
+    fun setCurrentTime(milliseconds: Long) {
         binding.trackScreenCurrentTime.text = SimpleDateFormat(
             "mm:ss",
             Locale.getDefault()
         ).format(milliseconds)
     }
 
-    override fun playbackControl() {
-        when (playerState) {
-            STATE_PLAYING -> {
-                presenter.pausePlayer()
-            }
-
-            STATE_PREPARED, STATE_PAUSED -> {
-                presenter.startPlayer()
-            }
-        }
-    }
-
-    override fun setOnMediaPlayerPrepared() {
+    private fun setOnMediaPlayerPrepared() {
         binding.trackScreenPlayButton.isEnabled = true
         playerState = STATE_PREPARED
     }
 
-    override fun setMediaPlayerOnCompletion() {
+    private fun setMediaPlayerOnCompletion() {
         playerState = STATE_PREPARED
         binding.trackScreenPlayButton.setImageResource(R.drawable.play_button)
+        viewModel.setStateToPrepared()
         handler.removeCallbacks(currentTimeRunnable)
     }
 
-    override fun setOnPlayerStarted() {
+    private fun setOnPlayerStarted() {
         binding.trackScreenPlayButton.setImageResource(R.drawable.pause_button)
         playerState = STATE_PLAYING
         handler.postDelayed(currentTimeRunnable, DELAY)
     }
 
-    override fun setOnPlayerPaused() {
+    private fun setOnPlayerPaused() {
         binding.trackScreenPlayButton.setImageResource(R.drawable.play_button)
         playerState = STATE_PAUSED
         handler.removeCallbacks(currentTimeRunnable)

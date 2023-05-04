@@ -1,4 +1,4 @@
-package com.example.playlistmaker.presentation.ui.search
+package com.example.playlistmaker.presentation.search
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -11,17 +11,16 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.example.playlistmaker.Container
 import com.example.playlistmaker.R
 import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.databinding.ActivitySearchBinding
 import com.example.playlistmaker.domain.model.Track
-import com.example.playlistmaker.presentation.presenter.search.SearchScreenPresenter
-import com.example.playlistmaker.presentation.presenter.search.SearchScreenView
-import com.example.playlistmaker.presentation.ui.track.TrackActivity
+import com.example.playlistmaker.presentation.track.TrackActivity
 
 
-class SearchActivity : AppCompatActivity(), SearchScreenView {
+class SearchActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySearchBinding
 
@@ -32,7 +31,7 @@ class SearchActivity : AppCompatActivity(), SearchScreenView {
     private var isClickAllowed = true
     private val searchRunnable = Runnable { findTracks() }
 
-    private lateinit var presenter: SearchScreenPresenter
+    private lateinit var viewModel: SearchViewModel
 
 
     @SuppressLint("NotifyDataSetChanged")
@@ -41,12 +40,51 @@ class SearchActivity : AppCompatActivity(), SearchScreenView {
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        presenter = SearchScreenPresenter(
-            this,
-            Creator.provideNetworkInteractor(),
-            Creator.provideLocalStorageInteractor()
-        )
+        viewModel = ViewModelProvider(
+            this, SearchViewModelFactory(
+                Creator.provideNetworkInteractor(),
+                Creator.provideLocalStorageInteractor()
+            )
+        )[SearchViewModel::class.java]
 
+        viewModel.screenState.observe(this) { screenState ->
+            when (screenState) {
+                is SearchScreenState.Loading -> setLoadingState()
+                is SearchScreenState.Content -> setContentState(screenState.trackList)
+                is SearchScreenState.Error -> setErrorState(screenState.errorType)
+                is SearchScreenState.History -> setHistoryState(screenState.trackList)
+
+            }
+        }
+
+        setUpListeners()
+
+        binding.trackListRecyclerView.adapter = trackListAdapter
+        binding.searchHistoryListRecyclerView.adapter = searchHistoryTrackListAdapter
+
+
+
+        Container.trackHistorySharedPreferences.registerOnSharedPreferenceChangeListener { _, key ->
+            if (key == ARRAY_LIST_TRACK_KEY) {
+                updateTrackListHistory(viewModel.getTrackHistoryList())
+            }
+        }
+
+        binding.searchText.setOnFocusChangeListener { _, hasFocus ->
+            binding.searchHistory.visibility =
+                if (hasFocus && binding.searchText.text.isEmpty() && searchHistoryTrackListAdapter.trackList.isNotEmpty())
+                    View.VISIBLE
+                else
+                    View.GONE
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        handler.removeCallbacks(searchRunnable)
+    }
+
+    private fun setUpListeners() {
         searchHistoryTrackListAdapter.trackClickListener = {
             if (clickDebounce()) {
                 openTrackScreen(it)
@@ -54,25 +92,17 @@ class SearchActivity : AppCompatActivity(), SearchScreenView {
         }
 
         trackListAdapter.trackClickListener = {
-            presenter.addTrackToHistory(it)
+            viewModel.addTrackToHistory(it)
 
             if (clickDebounce()) {
                 openTrackScreen(it)
             }
 
-            updateTrackListHistory(presenter.getTrackHistoryList())
+            updateTrackListHistory(viewModel.getTrackHistoryList())
         }
 
-        binding.trackListRecyclerView.adapter = trackListAdapter
-        binding.searchHistoryListRecyclerView.adapter = searchHistoryTrackListAdapter
-
-        updateTrackListHistory(presenter.getTrackHistoryList())
-
-        binding.searchHistory.visibility =
-            if (searchHistoryTrackListAdapter.trackList.isEmpty()) View.GONE else View.VISIBLE
-
         binding.searchHistoryClearButton.setOnClickListener {
-            presenter.clearSearchHistory()
+            viewModel.clearSearchHistory()
             binding.searchHistory.visibility = View.GONE
         }
 
@@ -81,11 +111,7 @@ class SearchActivity : AppCompatActivity(), SearchScreenView {
         }
 
         binding.buttonClear.setOnClickListener {
-            presenter.clearButtonClicked()
-        }
-
-        Container.trackHistorySharedPreferences.registerOnSharedPreferenceChangeListener { _, key ->
-            presenter.updateHistory(key, presenter.getTrackHistoryList())
+            clearButtonClicked()
         }
 
         binding.searchText.addTextChangedListener(object : TextWatcher {
@@ -107,19 +133,28 @@ class SearchActivity : AppCompatActivity(), SearchScreenView {
 
             override fun afterTextChanged(p0: Editable?) {}
         })
-
-        binding.searchText.setOnFocusChangeListener { _, hasFocus ->
-            binding.searchHistory.visibility =
-                if (hasFocus && binding.searchText.text.isEmpty() && searchHistoryTrackListAdapter.trackList.isNotEmpty())
-                    View.VISIBLE
-                else
-                    View.GONE
-        }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        handler.removeCallbacks(searchRunnable)
+    private fun setLoadingState() {
+        hidePlaceHolder()
+        setProgressbarListVisibility(View.VISIBLE)
+        setTrackListVisibility(View.GONE)
+    }
+
+    private fun setContentState(trackList: List<Track>) {
+        setProgressbarListVisibility(View.GONE)
+        setTrackListVisibility(View.VISIBLE)
+        updateTrackList(trackList)
+    }
+
+    private fun setErrorState(errorType: ErrorType) {
+        setProgressbarListVisibility(View.GONE)
+        showPlaceHolder(errorType)
+    }
+
+    private fun setHistoryState(trackList: List<Track>) {
+        binding.searchHistory.visibility = if (trackList.isEmpty()) View.GONE else View.VISIBLE
+        updateTrackListHistory(trackList)
     }
 
     private fun clickDebounce(): Boolean {
@@ -137,14 +172,14 @@ class SearchActivity : AppCompatActivity(), SearchScreenView {
         handler.postDelayed(searchRunnable, SEARCH_DELAY)
     }
 
-    override fun openTrackScreen(track: Track) {
+    private fun openTrackScreen(track: Track) {
         val trackIntent = Intent(this, TrackActivity::class.java)
         trackIntent.putExtra(TRACK_KEY, track)
         startActivity(trackIntent)
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun clearButtonClicked() {
+    fun clearButtonClicked() {
         binding.searchText.setText("")
 
         hideKeyboard()
@@ -171,29 +206,29 @@ class SearchActivity : AppCompatActivity(), SearchScreenView {
     }
 
     private fun findTracks() {
-        presenter.findTracks(binding.searchText.text.toString())
+        viewModel.findTracks(binding.searchText.text.toString())
     }
 
-    override fun setTrackListVisibility(visibility: Int) {
+    private fun setTrackListVisibility(visibility: Int) {
         binding.trackListRecyclerView.visibility = visibility
     }
 
-    override fun setProgressbarListVisibility(visibility: Int) {
+    private fun setProgressbarListVisibility(visibility: Int) {
         binding.searchProgressBar.visibility = visibility
     }
 
-    override fun hidePlaceHolder() {
+    private fun hidePlaceHolder() {
         binding.notFoundPlaceholder.visibility = View.GONE
         binding.networkErrorPlaceholder.visibility = View.GONE
     }
 
-    override fun showPlaceHolder(placeHolderType: PlaceHolderType) {
-        when (placeHolderType) {
-            PlaceHolderType.NOT_FOUND -> {
+    private fun showPlaceHolder(errorType: ErrorType) {
+        when (errorType) {
+            ErrorType.NOT_FOUND -> {
                 binding.notFoundPlaceholder.visibility = View.VISIBLE
             }
 
-            PlaceHolderType.NETWORK_ERROR -> {
+            ErrorType.NETWORK_ERROR -> {
                 binding.networkErrorPlaceholder.visibility = View.VISIBLE
                 binding.updateButton.setOnClickListener {
                     findTracks()
@@ -204,14 +239,14 @@ class SearchActivity : AppCompatActivity(), SearchScreenView {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun updateTrackListHistory(tracks: List<Track>) {
+    fun updateTrackListHistory(tracks: List<Track>) {
         searchHistoryTrackListAdapter.trackList.clear()
-        searchHistoryTrackListAdapter.trackList.addAll(presenter.getTrackHistoryList())
+        searchHistoryTrackListAdapter.trackList.addAll(tracks)
         searchHistoryTrackListAdapter.notifyDataSetChanged()
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun updateTrackList(tracks: List<Track>) {
+    fun updateTrackList(tracks: List<Track>) {
         trackListAdapter.trackList.clear()
         trackListAdapter.trackList.addAll(tracks)
         trackListAdapter.notifyDataSetChanged()
@@ -230,6 +265,7 @@ class SearchActivity : AppCompatActivity(), SearchScreenView {
     }
 
     companion object {
+        const val ARRAY_LIST_TRACK_KEY = "ARRAY_LIST_TRACK_KEY"
         const val SEARCH_TEXT = "SEARCH_TEXT"
         const val TRACK_KEY = "TRACK_KEY"
         private const val CLICK_DEBOUNCE_DELAY = 1000L
