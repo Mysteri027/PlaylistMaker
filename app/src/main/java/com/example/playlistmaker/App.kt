@@ -1,9 +1,15 @@
 package com.example.playlistmaker
 
 import android.app.Application
-import android.content.Context
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatDelegate
+import com.example.playlistmaker.di.dataModule
+import com.example.playlistmaker.di.domainModule
+import com.example.playlistmaker.di.presentationModule
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.context.startKoin
+import org.koin.core.logger.Level
 
 class App : Application() {
 
@@ -12,19 +18,26 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        Container.themeSharedPreferences = getSharedPreferences(
+        val themeSharedPreferences = getSharedPreferences(
             APP_SHARED_PREFERENCES_KEY, MODE_PRIVATE
         )
-        darkTheme = Container.themeSharedPreferences.getBoolean(DART_THEME_KEY, false)
-        switchTheme(darkTheme)
 
-        Container.trackHistorySharedPreferences = getSharedPreferences(
-            SEARCH_HISTORY_SHARED_PREFERENCES_KEY,
-            MODE_PRIVATE
-        )
+        darkTheme = themeSharedPreferences.getBoolean(DART_THEME_KEY, false)
+        switchTheme(darkTheme, themeSharedPreferences)
+
+        startKoin {
+            androidLogger(level = Level.DEBUG)
+            androidContext(this@App)
+            modules(
+                listOf(presentationModule, dataModule, domainModule)
+            )
+        }
     }
 
-    fun switchTheme(darkThemeEnabled: Boolean) {
+    private fun switchTheme(
+        darkThemeEnabled: Boolean,
+        themeSharedPreferences: SharedPreferences
+    ) {
         darkTheme = darkThemeEnabled
 
         AppCompatDelegate.setDefaultNightMode(
@@ -35,7 +48,7 @@ class App : Application() {
             }
         )
 
-        Container.themeSharedPreferences.edit()
+        themeSharedPreferences.edit()
             .putBoolean(DART_THEME_KEY, darkTheme)
             .apply()
     }
@@ -43,12 +56,6 @@ class App : Application() {
 
     companion object {
         const val APP_SHARED_PREFERENCES_KEY = "app_shared_preferences"
-        const val SEARCH_HISTORY_SHARED_PREFERENCES_KEY = "SEARCH_HISTORY_SHARED_PREFERENCES_KEY"
         const val DART_THEME_KEY = "dart_theme_key"
     }
-}
-
-object Container {
-    lateinit var trackHistorySharedPreferences: SharedPreferences
-    lateinit var themeSharedPreferences: SharedPreferences
 }

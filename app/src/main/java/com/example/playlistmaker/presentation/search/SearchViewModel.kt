@@ -3,7 +3,6 @@ package com.example.playlistmaker.presentation.search
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.example.playlistmaker.domain.interactor.LocalStorageInteractor
 import com.example.playlistmaker.domain.interactor.NetworkInteractor
 import com.example.playlistmaker.domain.model.Track
@@ -16,8 +15,12 @@ class SearchViewModel(
     private val _screenState = MutableLiveData<SearchScreenState>()
     val screenState: LiveData<SearchScreenState> = _screenState
 
+    private val _trackHistory = MutableLiveData(getTrackHistoryList())
+    val trackHistory: LiveData<List<Track>> = _trackHistory
+
     init {
         _screenState.postValue(SearchScreenState.History(getTrackHistoryList()))
+        getTrackHistoryList()
     }
 
     fun findTracks(query: String) {
@@ -40,27 +43,15 @@ class SearchViewModel(
 
     fun addTrackToHistory(track: Track) {
         localStorageInteractor.addTrack(track)
+        _trackHistory.postValue(getTrackHistoryList())
     }
 
     fun clearSearchHistory() {
         localStorageInteractor.clear()
+        _trackHistory.postValue(getTrackHistoryList())
     }
 
     fun getTrackHistoryList(): List<Track> {
         return localStorageInteractor.getSearchHistory()
-    }
-}
-
-
-class SearchViewModelFactory(
-    private val networkIterator: NetworkInteractor,
-    private val localStorageInteractor: LocalStorageInteractor,
-) : ViewModelProvider.Factory {
-
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return SearchViewModel(
-            networkIterator = networkIterator,
-            localStorageInteractor = localStorageInteractor
-        ) as T
     }
 }
