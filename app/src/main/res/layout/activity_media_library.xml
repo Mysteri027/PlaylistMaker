@@ -6,7 +6,7 @@
     android:background="?attr/main_screen_background"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".presentation.ui.medialibrary.MediaLibraryActivity">
+    tools:context=".presentation.medialibrary.MediaLibraryActivity">
 
 
     <!--    заглушка для MediaLibrary-->
