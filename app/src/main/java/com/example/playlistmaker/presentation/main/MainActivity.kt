@@ -18,25 +18,26 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel = ViewModelProvider(
-            this,
-            MainViewModelFactory(navigator = Navigator(context = this))
-        )[MainViewModel::class.java]
+        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
 
         binding.searchButton.setOnClickListener {
             val searchIntent = Intent(this, SearchActivity::class.java)
-            viewModel.openSearchScreen(searchIntent)
+            openActivity(searchIntent)
         }
 
         binding.mediaLibraryButton.setOnClickListener {
             val mediaLibraryIntent = Intent(this, MediaLibraryActivity::class.java)
-            viewModel.openMediaLibraryScreen(mediaLibraryIntent)
+            openActivity(mediaLibraryIntent)
         }
 
         binding.settingsButton.setOnClickListener {
             val settingsIntent = Intent(this, SettingsActivity::class.java)
-            viewModel.openSettingsScreen(settingsIntent)
+            openActivity(settingsIntent)
         }
+    }
+
+    private fun AppCompatActivity.openActivity(intent: Intent) {
+        this.startActivity(intent)
     }
 }
