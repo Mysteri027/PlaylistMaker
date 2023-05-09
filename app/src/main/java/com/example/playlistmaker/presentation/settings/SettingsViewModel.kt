@@ -1,7 +1,6 @@
 package com.example.playlistmaker.presentation.settings
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.example.playlistmaker.domain.interactor.SettingsInteractor
 import com.example.playlistmaker.domain.interactor.SharingInteractor
 import com.example.playlistmaker.domain.model.EmailData
@@ -12,7 +11,7 @@ class SettingsViewModel(
     private val settingsInteractor: SettingsInteractor,
 ) : ViewModel() {
 
-    fun getThemeSettings() : Boolean {
+    fun getThemeSettings(): Boolean {
         return settingsInteractor.getThemeSettings().isDarkThemeEnabled
     }
 
@@ -31,15 +30,4 @@ class SettingsViewModel(
     fun checkOffer(link: String) {
         sharingInteractor.openTerms(link)
     }
-}
-
-class SettingsViewModelFactory(
-    private val sharingInteractor: SharingInteractor,
-    private val settingsInteractor: SettingsInteractor,
-) : ViewModelProvider.Factory {
-
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return SettingsViewModel(sharingInteractor, settingsInteractor) as T
-    }
-
 }

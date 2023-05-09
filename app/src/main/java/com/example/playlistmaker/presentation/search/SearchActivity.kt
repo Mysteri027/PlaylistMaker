@@ -11,13 +11,11 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
-import com.example.playlistmaker.Container
 import com.example.playlistmaker.R
-import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.databinding.ActivitySearchBinding
 import com.example.playlistmaker.domain.model.Track
 import com.example.playlistmaker.presentation.track.TrackActivity
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class SearchActivity : AppCompatActivity() {
@@ -31,7 +29,7 @@ class SearchActivity : AppCompatActivity() {
     private var isClickAllowed = true
     private val searchRunnable = Runnable { findTracks() }
 
-    private lateinit var viewModel: SearchViewModel
+    private val viewModel: SearchViewModel by viewModel()
 
 
     @SuppressLint("NotifyDataSetChanged")
@@ -39,13 +37,6 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        viewModel = ViewModelProvider(
-            this, SearchViewModelFactory(
-                Creator.provideNetworkInteractor(),
-                Creator.provideLocalStorageInteractor()
-            )
-        )[SearchViewModel::class.java]
 
         viewModel.screenState.observe(this) { screenState ->
             when (screenState) {
@@ -63,11 +54,8 @@ class SearchActivity : AppCompatActivity() {
         binding.searchHistoryListRecyclerView.adapter = searchHistoryTrackListAdapter
 
 
-
-        Container.trackHistorySharedPreferences.registerOnSharedPreferenceChangeListener { _, key ->
-            if (key == ARRAY_LIST_TRACK_KEY) {
-                updateTrackListHistory(viewModel.getTrackHistoryList())
-            }
+        viewModel.trackHistory.observe(this) {
+            updateTrackListHistory(it)
         }
 
         binding.searchText.setOnFocusChangeListener { _, hasFocus ->
@@ -265,7 +253,6 @@ class SearchActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val ARRAY_LIST_TRACK_KEY = "ARRAY_LIST_TRACK_KEY"
         const val SEARCH_TEXT = "SEARCH_TEXT"
         const val TRACK_KEY = "TRACK_KEY"
         private const val CLICK_DEBOUNCE_DELAY = 1000L

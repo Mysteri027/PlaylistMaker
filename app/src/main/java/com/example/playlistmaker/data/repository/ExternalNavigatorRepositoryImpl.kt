@@ -16,15 +16,17 @@ class ExternalNavigatorRepositoryImpl(
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_TEXT, context.resources.getString(R.string.yandex_practicum_link))
             type = "text/plain"
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
 
-        context.startActivity(Intent.createChooser(sendIntent, null))
+        context.startActivity(sendIntent)
     }
 
     override fun openLink(link: String) {
         val arrowForwardIntent: Intent = Intent().apply {
             action = Intent.ACTION_VIEW
             data = Uri.parse(link)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         context.startActivity(arrowForwardIntent)
     }
@@ -35,6 +37,7 @@ class ExternalNavigatorRepositoryImpl(
             data = Uri.parse("mailto:")
             putExtra(Intent.EXTRA_EMAIL, arrayOf(emailData.email))
             putExtra(Intent.EXTRA_SUBJECT, emailData.subject)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         context.startActivity(supportIntent)
     }

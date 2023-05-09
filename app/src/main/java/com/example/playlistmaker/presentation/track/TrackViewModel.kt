@@ -3,7 +3,6 @@ package com.example.playlistmaker.presentation.track
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.example.playlistmaker.domain.interactor.MediaPlayerInteractor
 
 class TrackViewModel(
@@ -52,15 +51,4 @@ class TrackViewModel(
         _playerState.postValue(PlayerState.Prepared)
         _isMediaPlayerComplete.postValue(false)
     }
-}
-
-class TrackViewModelFactory(
-    private val mediaPlayerInteractor: MediaPlayerInteractor
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return TrackViewModel(
-            mediaPlayerInteractor = mediaPlayerInteractor,
-        ) as T
-    }
-
 }
