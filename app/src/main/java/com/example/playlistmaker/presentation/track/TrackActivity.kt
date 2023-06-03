@@ -21,7 +21,9 @@ import java.util.Locale
 
 class TrackActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityTrackBinding
+    private val binding by lazy {
+        ActivityTrackBinding.inflate(layoutInflater)
+    }
     private val viewModel: TrackViewModel by viewModel()
     private var playerState = STATE_DEFAULT
 
@@ -38,7 +40,6 @@ class TrackActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityTrackBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
 

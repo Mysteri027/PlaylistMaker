@@ -58,5 +58,16 @@
     <dimen name="margin_8dp">8dp</dimen>
     <dimen name="progress_bar_size">44dp</dimen>
     <dimen name="progress_bar_margin_top">148dp</dimen>
+    <dimen name="favorite_track_screen_not_found_margin_top">100dp</dimen>
+    <dimen name="favorite_track_screen_not_found_text_text_size">19sp</dimen>
+    <dimen name="favorite_track_screen_not_found_text_margin_top">20dp</dimen>
+    <dimen name="fragment_playlists_add_button_margin_top">24dp</dimen>
+    <dimen name="fragment_playlists_add_button_padding">10dp</dimen>
+    <dimen name="media_library_screen_back_button_margin">20dp</dimen>
+    <dimen name="media_library_screen_title_text_size">22sp</dimen>
+    <dimen name="media_library_screen_title_margin_top">14dp</dimen>
+    <dimen name="media_library_screen_title_margin_start">28dp</dimen>
+    <dimen name="media_library_screen_tabLayout_margin_top">16dp</dimen>
+    <dimen name="fragment_playlists_no_found_image_margin_top">56dp</dimen>
 
 </resources>

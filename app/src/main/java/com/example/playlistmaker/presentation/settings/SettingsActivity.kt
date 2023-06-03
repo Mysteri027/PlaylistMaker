@@ -8,12 +8,13 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivitySettingsBinding
+    private val binding by lazy {
+        ActivitySettingsBinding.inflate(layoutInflater)
+    }
     private val viewModel: SettingsViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         binding.switchThemeButton.isChecked = viewModel.getThemeSettings()
