@@ -20,7 +20,9 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivitySearchBinding
+    private val binding by lazy {
+        ActivitySearchBinding.inflate(layoutInflater)
+    }
 
     private val trackListAdapter = TrackAdapter()
     private val searchHistoryTrackListAdapter = TrackAdapter()
@@ -35,7 +37,6 @@ class SearchActivity : AppCompatActivity() {
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         viewModel.screenState.observe(this) { screenState ->

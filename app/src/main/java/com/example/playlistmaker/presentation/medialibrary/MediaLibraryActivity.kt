@@ -10,12 +10,13 @@ class MediaLibraryActivity : AppCompatActivity() {
 
     private val viewModel: MediaLibraryViewModel by viewModel()
 
-    private lateinit var binding: ActivityMediaLibraryBinding
+    private val binding by lazy {
+        ActivityMediaLibraryBinding.inflate(layoutInflater)
+    }
     private lateinit var tabLayoutMediator: TabLayoutMediator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMediaLibraryBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         binding.mediaLibraryScreenBackButton.setOnClickListener {
