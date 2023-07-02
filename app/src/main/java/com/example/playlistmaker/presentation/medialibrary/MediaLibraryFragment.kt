@@ -1,30 +1,37 @@
 package com.example.playlistmaker.presentation.medialibrary
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import com.example.playlistmaker.databinding.ActivityMediaLibraryBinding
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import com.example.playlistmaker.databinding.FragmentMediaLibraryBinding
 import com.google.android.material.tabs.TabLayoutMediator
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MediaLibraryActivity : AppCompatActivity() {
+class MediaLibraryFragment : Fragment() {
 
     private val viewModel: MediaLibraryViewModel by viewModel()
 
-    private val binding by lazy {
-        ActivityMediaLibraryBinding.inflate(layoutInflater)
-    }
+    private var _binding: FragmentMediaLibraryBinding? = null
+    private val binding get() = _binding!!
+
     private lateinit var tabLayoutMediator: TabLayoutMediator
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(binding.root)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentMediaLibraryBinding.inflate(layoutInflater)
+        return binding.root
+    }
 
-        binding.mediaLibraryScreenBackButton.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         binding.mediaLibraryScreenViewPager.adapter = MediaLibraryAdapter(
-            supportFragmentManager,
+            childFragmentManager,
             lifecycle,
         )
 
@@ -40,8 +47,8 @@ class MediaLibraryActivity : AppCompatActivity() {
         tabLayoutMediator.attach()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         tabLayoutMediator.detach()
     }
 }

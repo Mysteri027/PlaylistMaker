@@ -31,4 +31,8 @@
     <attr name="track_screen_track_artist_color" format="reference" />
     <attr name="track_screen_text_color" format="reference" />
     <attr name="track_screen_text_value_color" format="reference" />
+
+    <attr name="bottom_button_active_color" format="reference"/>
+    <attr name="bottom_button_not_active_color" format="reference"/>
+
 </resources>

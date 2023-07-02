@@ -3,13 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/SearchScreen"
-    tools:context=".presentation.search.SearchActivity">
+    tools:context=".presentation.search.SearchFragment">
 
     <TextView
         android:id="@+id/search_title"
         style="@style/ScreenTitle"
-        android:text="@string/search"
-        app:drawableStartCompat="@drawable/back_button" />
+        android:text="@string/search"/>
 
     <!--    Search field-->
     <FrameLayout

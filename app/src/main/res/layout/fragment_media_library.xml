@@ -5,14 +5,6 @@
     android:background="?attr/search_screen_background"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/media_library_screen_back_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/back_button"
-        android:layout_margin="@dimen/media_library_screen_back_button_margin"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
         android:id="@+id/media_library_screen_title"
@@ -24,7 +16,7 @@
         android:layout_marginStart="@dimen/media_library_screen_title_margin_start"
         android:textColor="?attr/settings_text_color"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@id/media_library_screen_back_button"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
     <com.google.android.material.tabs.TabLayout

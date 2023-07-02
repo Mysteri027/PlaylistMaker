@@ -125,6 +125,18 @@
         <item name="android:textSize">13sp</item>
     </style>
 
+    <style name="CustomNavigationView" >
+        <item name="android:background">?attr/search_screen_background</item>
+
+        <item name="itemIconTint">?attr/bottom_button_not_active_color</item>
+        <item name="itemTextColor">?attr/bottom_button_not_active_color</item>
+
+    </style>
+    <style name="BottomNavigationText" parent="TextAppearance.AppCompat">
+        <item name="fontFamily">@font/ys_display_regular</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
 </resources>
 
 
