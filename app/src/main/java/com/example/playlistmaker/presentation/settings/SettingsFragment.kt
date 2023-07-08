@@ -50,4 +50,9 @@ class SettingsFragment : Fragment() {
             viewModel.checkOffer(link)
         }
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }
