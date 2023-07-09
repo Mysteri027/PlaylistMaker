@@ -54,7 +54,6 @@ class SearchFragment : Fragment() {
                 is SearchScreenState.Content -> setContentState(screenState.trackList)
                 is SearchScreenState.Error -> setErrorState(screenState.errorType)
                 is SearchScreenState.History -> setHistoryState(screenState.trackList)
-
             }
         }
 
@@ -77,8 +76,8 @@ class SearchFragment : Fragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
+    override fun onDestroy() {
+        super.onDestroy()
         handler.removeCallbacks(searchRunnable)
         _binding = null
     }
@@ -206,7 +205,11 @@ class SearchFragment : Fragment() {
     }
 
     private fun findTracks() {
-        viewModel.findTracks(binding.searchText.text.toString())
+        val searchQuery = binding.searchText.text.toString()
+
+        if (searchQuery.isNotEmpty()) {
+            viewModel.findTracks(searchQuery)
+        }
     }
 
     private fun setTrackListVisibility(visibility: Int) {
