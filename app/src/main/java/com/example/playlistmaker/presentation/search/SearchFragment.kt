@@ -7,6 +7,7 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -48,13 +49,14 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.screenState.observe(requireActivity()) { screenState ->
+        viewModel.screenState.observe(viewLifecycleOwner) { screenState ->
             when (screenState) {
                 is SearchScreenState.Loading -> setLoadingState()
                 is SearchScreenState.Content -> setContentState(screenState.trackList)
                 is SearchScreenState.Error -> setErrorState(screenState.errorType)
                 is SearchScreenState.History -> setHistoryState(screenState.trackList)
             }
+            Log.d("SearchScreenState", screenState.toString())
         }
 
         setUpListeners()
@@ -63,7 +65,7 @@ class SearchFragment : Fragment() {
         binding.searchHistoryListRecyclerView.adapter = searchHistoryTrackListAdapter
 
 
-        viewModel.trackHistory.observe(requireActivity()) {
+        viewModel.trackHistory.observe(viewLifecycleOwner) {
             updateTrackListHistory(it)
         }
 
@@ -84,6 +86,7 @@ class SearchFragment : Fragment() {
 
     private fun setUpListeners() {
         searchHistoryTrackListAdapter.trackClickListener = {
+            viewModel.addTrackToHistory(it)
             if (clickDebounce()) {
                 openTrackScreen(it)
             }
@@ -183,6 +186,7 @@ class SearchFragment : Fragment() {
 
         hideKeyboard()
         hidePlaceHolder()
+        viewModel.setHistoryState()
         trackListAdapter.trackList.clear()
         trackListAdapter.notifyDataSetChanged()
     }

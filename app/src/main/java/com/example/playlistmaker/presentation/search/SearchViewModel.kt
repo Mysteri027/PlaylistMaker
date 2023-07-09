@@ -54,4 +54,8 @@ class SearchViewModel(
     fun getTrackHistoryList(): List<Track> {
         return localStorageInteractor.getSearchHistory()
     }
+
+    fun setHistoryState() {
+        _screenState.postValue(SearchScreenState.History(getTrackHistoryList()))
+    }
 }

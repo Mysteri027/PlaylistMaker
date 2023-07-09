@@ -114,7 +114,7 @@ class TrackFragment : Fragment() {
             }
         }
 
-        viewModel.playerState.observe(requireActivity()) {
+        viewModel.playerState.observe(viewLifecycleOwner) {
             when (it) {
                 is PlayerState.Started -> {
                     setOnPlayerStarted()
@@ -130,7 +130,7 @@ class TrackFragment : Fragment() {
             }
         }
 
-        viewModel.isMediaPlayerComplete.observe(requireActivity()) {
+        viewModel.isMediaPlayerComplete.observe(viewLifecycleOwner) {
             if (it) setMediaPlayerOnCompletion()
         }
     }
@@ -140,8 +140,9 @@ class TrackFragment : Fragment() {
         viewModel.pausePlayer()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
+        handler.removeCallbacks(currentTimeRunnable)
         viewModel.releasePlayer()
     }
 
