@@ -1,29 +1,44 @@
-@file:Suppress("DEPRECATION", "UNCHECKED_CAST")
+@file:Suppress("DEPRECATION")
 
 package com.example.playlistmaker.presentation.track
 
-import android.app.Activity
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import androidx.appcompat.app.AppCompatActivity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
-import com.example.playlistmaker.databinding.ActivityTrackBinding
+import com.example.playlistmaker.databinding.FragmentTrackBinding
 import com.example.playlistmaker.domain.model.Track
-import com.example.playlistmaker.presentation.search.SearchActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class TrackActivity : AppCompatActivity() {
+class TrackFragment : Fragment() {
 
-    private val binding by lazy {
-        ActivityTrackBinding.inflate(layoutInflater)
+    companion object {
+        private const val STATE_DEFAULT = 0
+        private const val STATE_PREPARED = 1
+        private const val STATE_PLAYING = 2
+        private const val STATE_PAUSED = 3
+        private const val DELAY = 1000L
+
+        const val ARGS_TRACK = "ARGS_TRACK"
+
+        fun createArgs(track: Track): Bundle =
+            bundleOf(ARGS_TRACK to track)
     }
+
+
+    private var _binding: FragmentTrackBinding? = null
+    private val binding get() = _binding!!
+
     private val viewModel: TrackViewModel by viewModel()
     private var playerState = STATE_DEFAULT
 
@@ -38,16 +53,24 @@ class TrackActivity : AppCompatActivity() {
 
     private lateinit var trackPreviewUrl: String
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(binding.root)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentTrackBinding.inflate(layoutInflater)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
 
         binding.trackScreenBackButton.setOnClickListener {
-            finish()
+            findNavController().navigateUp()
         }
 
-        val track = getSerializable(this, SearchActivity.TRACK_KEY, Track::class.java)
+        val track = requireArguments().getSerializable(ARGS_TRACK) as Track
 
         val trackCoverUrl = viewModel.getTrackImage(track.artworkUrl100)
 
@@ -91,7 +114,7 @@ class TrackActivity : AppCompatActivity() {
             }
         }
 
-        viewModel.playerState.observe(this) {
+        viewModel.playerState.observe(viewLifecycleOwner) {
             when (it) {
                 is PlayerState.Started -> {
                     setOnPlayerStarted()
@@ -107,7 +130,7 @@ class TrackActivity : AppCompatActivity() {
             }
         }
 
-        viewModel.isMediaPlayerComplete.observe(this) {
+        viewModel.isMediaPlayerComplete.observe(viewLifecycleOwner) {
             if (it) setMediaPlayerOnCompletion()
         }
     }
@@ -117,8 +140,9 @@ class TrackActivity : AppCompatActivity() {
         viewModel.pausePlayer()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
+        handler.removeCallbacks(currentTimeRunnable)
         viewModel.releasePlayer()
     }
 
@@ -152,19 +176,4 @@ class TrackActivity : AppCompatActivity() {
         playerState = STATE_PAUSED
         handler.removeCallbacks(currentTimeRunnable)
     }
-
-    companion object {
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 3
-        private const val DELAY = 1000L
-    }
-}
-
-fun <T : Serializable?> getSerializable(activity: Activity, name: String, clazz: Class<T>): T {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-        activity.intent.getSerializableExtra(name, clazz)!!
-    else
-        activity.intent.getSerializableExtra(name) as T
 }

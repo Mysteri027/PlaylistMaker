@@ -1,27 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/MainScreenContainer">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <TextView
-        style="@style/MainScreenTitle"
-        android:text="@string/main_screen_title" />
 
-    <Button
-        android:id="@+id/search_button"
-        style="@style/MainScreenButton"
-        android:text="@string/search_button_text"
-        app:icon="@drawable/search_icon" />
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/container_view"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:defaultNavHost="true"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
 
-    <Button
-        android:id="@+id/media_library_button"
-        style="@style/MainScreenButton"
-        android:text="@string/library_button_text"
-        app:icon="@drawable/library_icon" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navGraph="@navigation/nav_graph" />
 
-    <Button
-        android:id="@+id/settings_button"
-        style="@style/MainScreenButton"
-        android:text="@string/settings_button_text"
-        app:icon="@drawable/settings_icon" />
-</LinearLayout>
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
+        style="@style/CustomNavigationView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:itemTextAppearanceActive="@style/BottomNavigationText"
+        app:itemTextAppearanceInactive="@style/BottomNavigationText"
+        app:itemTextColor="@drawable/bottom_nav_item_color"
+        app:itemIconTint="@drawable/bottom_nav_item_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_navigation_menu" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

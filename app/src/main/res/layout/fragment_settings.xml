@@ -7,8 +7,7 @@
     <TextView
         android:id="@+id/setting_title"
         style="@style/ScreenTitle"
-        android:text="@string/settings"
-        app:drawableStartCompat="@drawable/back_button" />
+        android:text="@string/settings" />
 
     <FrameLayout
         android:id="@+id/black_theme_container"

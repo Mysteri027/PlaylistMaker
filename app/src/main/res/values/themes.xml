@@ -44,5 +44,8 @@
         <item name="track_screen_track_artist_color">@color/black</item>
         <item name="track_screen_text_color">@color/yp_text_gray</item>
         <item name="track_screen_text_value_color">@color/black</item>
+
+        <item name="bottom_button_active_color">@color/yp_blue</item>
+        <item name="bottom_button_not_active_color">@color/yp_black</item>
     </style>
 </resources>

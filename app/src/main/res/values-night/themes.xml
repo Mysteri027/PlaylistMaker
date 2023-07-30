@@ -46,5 +46,8 @@
         <item name="track_screen_text_color">@color/yp_text_gray</item>
         <item name="track_screen_text_value_color">@color/white</item>
 
+        <item name="bottom_button_active_color">@color/yp_blue</item>
+        <item name="bottom_button_not_active_color">@color/yp_white</item>
+
     </style>
 </resources>
