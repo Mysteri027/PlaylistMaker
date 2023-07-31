@@ -14,11 +14,13 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentSearchBinding
 import com.example.playlistmaker.domain.model.Track
 import com.example.playlistmaker.presentation.track.TrackFragment
+import com.example.playlistmaker.utils.debounce
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -27,14 +29,13 @@ class SearchFragment : Fragment() {
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
 
-    private val trackListAdapter = TrackAdapter()
-    private val searchHistoryTrackListAdapter = TrackAdapter()
-
-    private val handler = Handler(Looper.getMainLooper())
-    private var isClickAllowed = true
-    private val searchRunnable = Runnable { findTracks() }
+    private var trackListAdapter: TrackAdapter? = null
+    private var searchHistoryTrackListAdapter: TrackAdapter? = null
 
     private val viewModel: SearchViewModel by viewModel()
+
+    private lateinit var onTrackClickDebounce: (Track) -> Unit
+    private lateinit var onSearchDebounce: (String) -> Unit
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,11 +60,21 @@ class SearchFragment : Fragment() {
             Log.d("SearchScreenState", screenState.toString())
         }
 
+        trackListAdapter = TrackAdapter()
+        searchHistoryTrackListAdapter = TrackAdapter()
+
         setUpListeners()
 
         binding.trackListRecyclerView.adapter = trackListAdapter
         binding.searchHistoryListRecyclerView.adapter = searchHistoryTrackListAdapter
 
+        onTrackClickDebounce = debounce(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false) { track ->
+            openTrackScreen(track)
+        }
+
+        onSearchDebounce = debounce(SEARCH_DELAY, viewLifecycleOwner.lifecycleScope, false) {
+            findTracks()
+        }
 
         viewModel.trackHistory.observe(viewLifecycleOwner) {
             updateTrackListHistory(it)
@@ -71,33 +82,34 @@ class SearchFragment : Fragment() {
 
         binding.searchText.setOnFocusChangeListener { _, hasFocus ->
             binding.searchHistory.visibility =
-                if (hasFocus && binding.searchText.text.isEmpty() && searchHistoryTrackListAdapter.trackList.isNotEmpty())
+                if (hasFocus && binding.searchText.text.isEmpty() && searchHistoryTrackListAdapter?.trackList!!.isNotEmpty())
                     View.VISIBLE
                 else
                     View.GONE
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        trackListAdapter = null
+        searchHistoryTrackListAdapter = null
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-        handler.removeCallbacks(searchRunnable)
         _binding = null
     }
 
     private fun setUpListeners() {
-        searchHistoryTrackListAdapter.trackClickListener = {
+        searchHistoryTrackListAdapter?.trackClickListener = {
             viewModel.addTrackToHistory(it)
-            if (clickDebounce()) {
-                openTrackScreen(it)
-            }
+            onTrackClickDebounce(it)
         }
 
-        trackListAdapter.trackClickListener = {
+        trackListAdapter?.trackClickListener = {
             viewModel.addTrackToHistory(it)
 
-            if (clickDebounce()) {
-                openTrackScreen(it)
-            }
+            onTrackClickDebounce(it)
 
             updateTrackListHistory(viewModel.getTrackHistoryList())
         }
@@ -122,7 +134,7 @@ class SearchFragment : Fragment() {
                 binding.buttonClear.visibility = clearButtonVisibility(s)
 
                 if (s!!.isNotEmpty()) {
-                    searchDebounce()
+                    onSearchDebounce(s.toString())
                 }
 
                 binding.trackListRecyclerView.visibility = View.VISIBLE
@@ -158,21 +170,6 @@ class SearchFragment : Fragment() {
         updateTrackListHistory(trackList)
     }
 
-    private fun clickDebounce(): Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
-        }
-
-        return current
-    }
-
-    private fun searchDebounce() {
-        handler.removeCallbacks(searchRunnable)
-        handler.postDelayed(searchRunnable, SEARCH_DELAY)
-    }
-
     private fun openTrackScreen(track: Track) {
         findNavController().navigate(
             R.id.action_searchFragment_to_trackFragment,
@@ -187,8 +184,8 @@ class SearchFragment : Fragment() {
         hideKeyboard()
         hidePlaceHolder()
         viewModel.setHistoryState()
-        trackListAdapter.trackList.clear()
-        trackListAdapter.notifyDataSetChanged()
+        trackListAdapter?.trackList!!.clear()
+        trackListAdapter?.notifyDataSetChanged()
     }
 
     private fun hideKeyboard() {
@@ -247,16 +244,16 @@ class SearchFragment : Fragment() {
 
     @SuppressLint("NotifyDataSetChanged")
     fun updateTrackListHistory(tracks: List<Track>) {
-        searchHistoryTrackListAdapter.trackList.clear()
-        searchHistoryTrackListAdapter.trackList.addAll(tracks)
-        searchHistoryTrackListAdapter.notifyDataSetChanged()
+        searchHistoryTrackListAdapter?.trackList!!.clear()
+        searchHistoryTrackListAdapter?.trackList!!.addAll(tracks)
+        searchHistoryTrackListAdapter?.notifyDataSetChanged()
     }
 
     @SuppressLint("NotifyDataSetChanged")
     fun updateTrackList(tracks: List<Track>) {
-        trackListAdapter.trackList.clear()
-        trackListAdapter.trackList.addAll(tracks)
-        trackListAdapter.notifyDataSetChanged()
+        trackListAdapter?.trackList!!.clear()
+        trackListAdapter?.trackList!!.addAll(tracks)
+        trackListAdapter?.notifyDataSetChanged()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

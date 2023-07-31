@@ -15,4 +15,6 @@ interface MediaPlayerRepository {
     fun releasePlayer()
 
     fun getCurrentPosition(): Int
+
+    fun isPlaying(): Boolean
 }

@@ -1,32 +1,27 @@
 package com.example.playlistmaker.data.repository
 
+import com.example.playlistmaker.data.dto.TrackResponse
+import com.example.playlistmaker.data.network.NetworkClient
 import com.example.playlistmaker.domain.model.Track
 import com.example.playlistmaker.domain.repository.NetworkRepository
-import com.example.playlistmaker.data.network.ITunesSearchAPIService
-import com.example.playlistmaker.data.dto.TrackResponse
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
-class NetworkRepositoryImpl(private val iTunesSearchAPIService: ITunesSearchAPIService) :
+class NetworkRepositoryImpl(private val networkClient: NetworkClient) :
     NetworkRepository {
 
-    override fun getTracks(
-        query: String,
-        onSuccess: (List<Track>) -> Unit,
-        onError: () -> Unit
-    ) {
-        iTunesSearchAPIService.search(query).enqueue(object : Callback<TrackResponse> {
-            override fun onResponse(call: Call<TrackResponse>, response: Response<TrackResponse>) {
-                if (response.isSuccessful and (response.code() == 200)) {
-                    onSuccess.invoke(response.body()?.results ?: listOf())
+    override fun getTracks(query: String): Flow<Pair<List<Track>?, String?>> = flow {
+        val result = networkClient.doRequest(query)
+        when (result.resultCode) {
+            200 -> {
+                with(result as TrackResponse) {
+                    emit(Pair(result.results, null))
                 }
             }
 
-            override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
-                onError.invoke()
+            else -> {
+                emit(Pair(null, "error"))
             }
-
-        })
+        }
     }
 }

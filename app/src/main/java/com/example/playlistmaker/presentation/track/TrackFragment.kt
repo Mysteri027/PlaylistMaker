@@ -5,6 +5,7 @@ package com.example.playlistmaker.presentation.track
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,12 +24,6 @@ import java.util.Locale
 class TrackFragment : Fragment() {
 
     companion object {
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 3
-        private const val DELAY = 1000L
-
         const val ARGS_TRACK = "ARGS_TRACK"
 
         fun createArgs(track: Track): Bundle =
@@ -40,16 +35,6 @@ class TrackFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: TrackViewModel by viewModel()
-    private var playerState = STATE_DEFAULT
-
-    private val handler = Handler(Looper.getMainLooper())
-
-    private val currentTimeRunnable = object : Runnable {
-        override fun run() {
-            setCurrentTime(viewModel.getCurrentPosition().toLong())
-            handler.postDelayed(this, DELAY)
-        }
-    }
 
     private lateinit var trackPreviewUrl: String
 
@@ -102,36 +87,16 @@ class TrackFragment : Fragment() {
             trackScreenCountryValue.text = track.country
 
             trackScreenPlayButton.setOnClickListener {
-                when (playerState) {
-                    STATE_PLAYING -> {
-                        viewModel.pausePlayer()
-                    }
-
-                    STATE_PREPARED, STATE_PAUSED -> {
-                        viewModel.startPlayer()
-                    }
-                }
+                viewModel.onPlayButtonClicked()
             }
         }
 
         viewModel.playerState.observe(viewLifecycleOwner) {
-            when (it) {
-                is PlayerState.Started -> {
-                    setOnPlayerStarted()
-                }
+            binding.trackScreenPlayButton.isEnabled = it.isPlayButtonEnabled
+            binding.trackScreenPlayButton.setImageResource(it.buttonImage)
+            binding.trackScreenCurrentTime.text = it.progress
 
-                is PlayerState.Paused -> {
-                    setOnPlayerPaused()
-                }
-
-                is PlayerState.Prepared -> {
-                    setOnMediaPlayerPrepared()
-                }
-            }
-        }
-
-        viewModel.isMediaPlayerComplete.observe(viewLifecycleOwner) {
-            if (it) setMediaPlayerOnCompletion()
+            Log.d("PlayerState", it.toString())
         }
     }
 
@@ -142,38 +107,6 @@ class TrackFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        handler.removeCallbacks(currentTimeRunnable)
         viewModel.releasePlayer()
-    }
-
-    fun setCurrentTime(milliseconds: Long) {
-        binding.trackScreenCurrentTime.text = SimpleDateFormat(
-            "mm:ss",
-            Locale.getDefault()
-        ).format(milliseconds)
-    }
-
-    private fun setOnMediaPlayerPrepared() {
-        binding.trackScreenPlayButton.isEnabled = true
-        playerState = STATE_PREPARED
-    }
-
-    private fun setMediaPlayerOnCompletion() {
-        playerState = STATE_PREPARED
-        binding.trackScreenPlayButton.setImageResource(R.drawable.play_button)
-        viewModel.setStateToPrepared()
-        handler.removeCallbacks(currentTimeRunnable)
-    }
-
-    private fun setOnPlayerStarted() {
-        binding.trackScreenPlayButton.setImageResource(R.drawable.pause_button)
-        playerState = STATE_PLAYING
-        handler.postDelayed(currentTimeRunnable, DELAY)
-    }
-
-    private fun setOnPlayerPaused() {
-        binding.trackScreenPlayButton.setImageResource(R.drawable.play_button)
-        playerState = STATE_PAUSED
-        handler.removeCallbacks(currentTimeRunnable)
     }
 }
