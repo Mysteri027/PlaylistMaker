@@ -3,9 +3,11 @@ package com.example.playlistmaker.presentation.search
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.domain.interactor.LocalStorageInteractor
 import com.example.playlistmaker.domain.interactor.NetworkInteractor
 import com.example.playlistmaker.domain.model.Track
+import kotlinx.coroutines.launch
 
 class SearchViewModel(
     private val networkIterator: NetworkInteractor,
@@ -25,20 +27,18 @@ class SearchViewModel(
 
     fun findTracks(query: String) {
         _screenState.postValue(SearchScreenState.Loading)
-        networkIterator.getTracks(
-            query = query,
-            onSuccess = { tracks ->
 
-                if (tracks.isEmpty()) {
+        viewModelScope.launch {
+            networkIterator.getTracks(query).collect { result ->
+                if (result.second != null) {
+                    _screenState.postValue(SearchScreenState.Error(ErrorType.NETWORK_ERROR))
+                } else if (result.first!!.isEmpty()) {
                     _screenState.postValue(SearchScreenState.Error(ErrorType.NOT_FOUND))
                 } else {
-                    _screenState.postValue(SearchScreenState.Content(tracks))
+                    _screenState.postValue(SearchScreenState.Content(result.first!!))
                 }
-            },
-            onError = {
-                _screenState.postValue(SearchScreenState.Error(ErrorType.NETWORK_ERROR))
             }
-        )
+        }
     }
 
     fun addTrackToHistory(track: Track) {

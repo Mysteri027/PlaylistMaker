@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.media.MediaPlayer
 import com.example.playlistmaker.data.network.ITunesSearchAPIService
+import com.example.playlistmaker.data.network.NetworkClient
+import com.example.playlistmaker.data.network.RetrofitNetworkClient
 import com.example.playlistmaker.data.repository.ExternalNavigatorRepositoryImpl
 import com.example.playlistmaker.data.repository.LocalStorageRepositoryImpl
 import com.example.playlistmaker.data.repository.MediaPlayerRepositoryImpl
@@ -46,8 +48,12 @@ val dataModule = module {
 
     factory<NetworkRepository> {
         NetworkRepositoryImpl(
-            iTunesSearchAPIService = get()
+            networkClient = get()
         )
+    }
+
+    factory<NetworkClient> {
+        RetrofitNetworkClient(iTunesSearchAPIService = get())
     }
 
     factory<SettingRepository> {

@@ -29,4 +29,8 @@ class MediaPlayerInteractor(
         return mediaPlayerRepository.getCurrentPosition()
     }
 
+    fun isPlaying(): Boolean {
+        return mediaPlayerRepository.isPlaying()
+    }
+
 }
