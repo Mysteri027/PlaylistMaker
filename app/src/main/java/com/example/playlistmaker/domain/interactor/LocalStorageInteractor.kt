@@ -7,7 +7,7 @@ class LocalStorageInteractor(
     private val localStorageRepository: LocalStorageRepository
 ) {
 
-    fun getSearchHistory(): ArrayList<Track> {
+    fun getSearchHistory(): List<Track> {
         return localStorageRepository.getSearchHistory()
     }
 

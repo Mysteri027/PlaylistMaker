@@ -18,7 +18,7 @@ val presentationModule = module {
     viewModel {
         SearchViewModel(
             networkIterator = get(),
-            localStorageInteractor = get()
+            localStorageInteractor = get(),
         )
     }
 
@@ -31,12 +31,15 @@ val presentationModule = module {
 
     viewModel {
         TrackViewModel(
-            mediaPlayerInteractor = get()
+            mediaPlayerInteractor = get(),
+            trackDatabaseInteractor = get()
         )
     }
 
     viewModel {
-        FavoriteTracksViewModel()
+        FavoriteTracksViewModel(
+            databaseInteractor = get(),
+        )
     }
 
     viewModel {

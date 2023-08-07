@@ -3,20 +3,27 @@ package com.example.playlistmaker.di
 import android.content.Context
 import android.content.SharedPreferences
 import android.media.MediaPlayer
+import androidx.room.Room
+import com.example.playlistmaker.data.db.TrackDatabase
+import com.example.playlistmaker.data.mapper.DatabaseMapperToEntity
+import com.example.playlistmaker.data.mapper.DatabaseMapperToTrack
 import com.example.playlistmaker.data.network.ITunesSearchAPIService
 import com.example.playlistmaker.data.network.NetworkClient
 import com.example.playlistmaker.data.network.RetrofitNetworkClient
+import com.example.playlistmaker.data.repository.DatabaseRepositoryImpl
 import com.example.playlistmaker.data.repository.ExternalNavigatorRepositoryImpl
 import com.example.playlistmaker.data.repository.LocalStorageRepositoryImpl
 import com.example.playlistmaker.data.repository.MediaPlayerRepositoryImpl
 import com.example.playlistmaker.data.repository.NetworkRepositoryImpl
 import com.example.playlistmaker.data.repository.SettingRepositoryImpl
 import com.example.playlistmaker.data.searchhistory.SearchHistory
+import com.example.playlistmaker.domain.repository.DatabaseRepository
 import com.example.playlistmaker.domain.repository.ExternalNavigatorRepository
 import com.example.playlistmaker.domain.repository.LocalStorageRepository
 import com.example.playlistmaker.domain.repository.MediaPlayerRepository
 import com.example.playlistmaker.domain.repository.NetworkRepository
 import com.example.playlistmaker.domain.repository.SettingRepository
+import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -36,7 +43,8 @@ val dataModule = module {
 
     factory<LocalStorageRepository> {
         LocalStorageRepositoryImpl(
-            searchHistory = get()
+            searchHistory = get(),
+            trackDatabase = get()
         )
     }
 
@@ -48,7 +56,8 @@ val dataModule = module {
 
     factory<NetworkRepository> {
         NetworkRepositoryImpl(
-            networkClient = get()
+            networkClient = get(),
+            trackDatabase = get()
         )
     }
 
@@ -86,6 +95,28 @@ val dataModule = module {
 
     factory {
         MediaPlayer()
+    }
+
+    single {
+        Room.databaseBuilder(androidContext(), TrackDatabase::class.java, "track_database.db")
+            .fallbackToDestructiveMigration()
+            .build()
+    }
+
+    factory {
+        DatabaseMapperToTrack()
+    }
+
+    factory {
+        DatabaseMapperToEntity()
+    }
+
+    factory<DatabaseRepository> {
+        DatabaseRepositoryImpl(
+            trackDatabase = get(),
+            entityToTrack = get(),
+            trackToEntity = get()
+        )
     }
 }
 
