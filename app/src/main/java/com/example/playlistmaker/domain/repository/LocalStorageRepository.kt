@@ -4,7 +4,7 @@ import com.example.playlistmaker.domain.model.Track
 
 interface LocalStorageRepository {
 
-    fun getSearchHistory(): ArrayList<Track>
+    fun getSearchHistory(): List<Track>
     fun addTrack(track: Track)
     fun clear()
 }

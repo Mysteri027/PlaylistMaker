@@ -56,7 +56,7 @@ class TrackFragment : Fragment() {
         }
 
         val track = requireArguments().getSerializable(ARGS_TRACK) as Track
-
+        viewModel.checkIsFavorite(track)
         val trackCoverUrl = viewModel.getTrackImage(track.artworkUrl100)
 
         trackPreviewUrl = track.previewUrl
@@ -89,6 +89,10 @@ class TrackFragment : Fragment() {
             trackScreenPlayButton.setOnClickListener {
                 viewModel.onPlayButtonClicked()
             }
+
+            trackScreenLikeButton.setOnClickListener {
+                viewModel.onFavoriteClicked(track)
+            }
         }
 
         viewModel.playerState.observe(viewLifecycleOwner) {
@@ -97,6 +101,14 @@ class TrackFragment : Fragment() {
             binding.trackScreenCurrentTime.text = it.progress
 
             Log.d("PlayerState", it.toString())
+        }
+
+        viewModel.isTrackFavorite.observe(viewLifecycleOwner) { isFavorite ->
+            if(isFavorite) {
+                binding.trackScreenLikeButton.setImageResource(R.drawable.like_button_filled)
+            } else {
+                binding.trackScreenLikeButton.setImageResource(R.drawable.like_button)
+            }
         }
     }
 

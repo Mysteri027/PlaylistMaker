@@ -19,7 +19,11 @@
     <fragment
         android:id="@+id/mediaLibraryFragment"
         android:name="com.example.playlistmaker.presentation.medialibrary.MediaLibraryFragment"
-        android:label="MediaLibraryFragment" />
+        android:label="MediaLibraryFragment" >
+        <action
+            android:id="@+id/action_mediaLibraryFragment_to_trackFragment"
+            app:destination="@id/trackFragment" />
+    </fragment>
     <fragment
         android:id="@+id/trackFragment"
         android:name="com.example.playlistmaker.presentation.track.TrackFragment"

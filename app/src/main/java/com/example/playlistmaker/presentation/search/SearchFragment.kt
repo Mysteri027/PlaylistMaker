@@ -3,8 +3,6 @@ package com.example.playlistmaker.presentation.search
 import android.annotation.SuppressLint
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -68,9 +66,10 @@ class SearchFragment : Fragment() {
         binding.trackListRecyclerView.adapter = trackListAdapter
         binding.searchHistoryListRecyclerView.adapter = searchHistoryTrackListAdapter
 
-        onTrackClickDebounce = debounce(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false) { track ->
-            openTrackScreen(track)
-        }
+        onTrackClickDebounce =
+            debounce(CLICK_DEBOUNCE_DELAY, viewLifecycleOwner.lifecycleScope, false) { track ->
+                openTrackScreen(track)
+            }
 
         onSearchDebounce = debounce(SEARCH_DELAY, viewLifecycleOwner.lifecycleScope, false) {
             findTracks()

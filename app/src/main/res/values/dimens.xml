@@ -69,5 +69,6 @@
     <dimen name="media_library_screen_title_margin_start">28dp</dimen>
     <dimen name="media_library_screen_tabLayout_margin_top">16dp</dimen>
     <dimen name="fragment_playlists_no_found_image_margin_top">56dp</dimen>
+    <dimen name="favorite_track_screen_track_list_margin_top">20dp</dimen>
 
 </resources>

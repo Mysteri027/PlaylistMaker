@@ -3,7 +3,7 @@ package com.example.playlistmaker.domain.model
 import java.io.Serializable
 
 data class Track(
-    val trackId: Int,
+    val trackId: Long,
     val trackName: String,
     val artistName: String,
     val trackTimeMillis: String,
@@ -13,4 +13,5 @@ data class Track(
     val primaryGenreName: String,
     val country: String,
     val previewUrl: String,
+    var isFavorite: Boolean = false,
 ) : Serializable

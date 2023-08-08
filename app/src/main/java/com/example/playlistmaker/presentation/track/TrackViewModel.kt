@@ -1,10 +1,13 @@
 package com.example.playlistmaker.presentation.track
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.domain.interactor.MediaPlayerInteractor
+import com.example.playlistmaker.domain.interactor.TrackDatabaseInteractor
+import com.example.playlistmaker.domain.model.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -12,13 +15,32 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class TrackViewModel(
-    private val mediaPlayerInteractor: MediaPlayerInteractor
+    private val mediaPlayerInteractor: MediaPlayerInteractor,
+    private val trackDatabaseInteractor: TrackDatabaseInteractor
 ) : ViewModel() {
 
     private val _playerState = MutableLiveData<PlayerState>()
     val playerState: LiveData<PlayerState> = _playerState
 
+    private val _isTrackFavorite = MutableLiveData<Boolean>(false)
+    val isTrackFavorite: LiveData<Boolean> = _isTrackFavorite
+
     private var timerJob: Job? = null
+
+
+    fun checkIsFavorite(track: Track) {
+        viewModelScope.launch {
+            trackDatabaseInteractor.getAllTracks().collect { favoriteTracks ->
+                favoriteTracks.forEach {
+                    if (it.trackId == track.trackId) {
+                        _isTrackFavorite.postValue(true)
+                        track.isFavorite = true
+                    }
+                }
+            }
+        }
+
+    }
 
     fun preparePlayer(url: String) {
         mediaPlayerInteractor.preparePlayer(
@@ -82,5 +104,17 @@ class TrackViewModel(
 
             else -> {}
         }
+    }
+
+    fun onFavoriteClicked(track: Track) {
+        viewModelScope.launch {
+            if (track.isFavorite)
+                trackDatabaseInteractor.deleteTrack(track.trackId)
+            else
+                trackDatabaseInteractor.addTrack(track)
+        }
+
+        track.isFavorite = !track.isFavorite
+        _isTrackFavorite.postValue(track.isFavorite)
     }
 }
