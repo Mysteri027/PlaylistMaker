@@ -1,12 +1,13 @@
 package com.example.playlistmaker.presentation.track
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.domain.interactor.MediaPlayerInteractor
+import com.example.playlistmaker.domain.interactor.PlaylistInteractor
 import com.example.playlistmaker.domain.interactor.TrackDatabaseInteractor
+import com.example.playlistmaker.domain.model.Playlist
 import com.example.playlistmaker.domain.model.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -16,14 +17,21 @@ import java.util.Locale
 
 class TrackViewModel(
     private val mediaPlayerInteractor: MediaPlayerInteractor,
-    private val trackDatabaseInteractor: TrackDatabaseInteractor
+    private val trackDatabaseInteractor: TrackDatabaseInteractor,
+    private val playlistInteractor: PlaylistInteractor,
 ) : ViewModel() {
 
     private val _playerState = MutableLiveData<PlayerState>()
     val playerState: LiveData<PlayerState> = _playerState
 
-    private val _isTrackFavorite = MutableLiveData<Boolean>(false)
+    private val _isTrackFavorite = MutableLiveData(false)
     val isTrackFavorite: LiveData<Boolean> = _isTrackFavorite
+
+    private val _playlists = MutableLiveData<List<Playlist>>()
+    val playlists: LiveData<List<Playlist>> = _playlists
+
+    private val _isAlreadyInPlaylist = MutableLiveData<Pair<String, Boolean>>()
+    val isAlreadyInPlaylist: LiveData<Pair<String, Boolean>> = _isAlreadyInPlaylist
 
     private var timerJob: Job? = null
 
@@ -40,6 +48,14 @@ class TrackViewModel(
             }
         }
 
+    }
+
+    fun getPlayLists() {
+        viewModelScope.launch {
+            playlistInteractor.getSavedPlaylists().collect {
+                _playlists.postValue(it)
+            }
+        }
     }
 
     fun preparePlayer(url: String) {
@@ -116,5 +132,13 @@ class TrackViewModel(
 
         track.isFavorite = !track.isFavorite
         _isTrackFavorite.postValue(track.isFavorite)
+    }
+
+    fun addTrackToPlayList(track: Track, playlist: Playlist) {
+        viewModelScope.launch {
+            playlistInteractor.addTrackToPlayList(track, playlist).collect {
+                _isAlreadyInPlaylist.postValue(Pair(playlist.name, it))
+            }
+        }
     }
 }

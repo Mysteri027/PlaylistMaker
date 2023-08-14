@@ -70,5 +70,27 @@
     <dimen name="media_library_screen_tabLayout_margin_top">16dp</dimen>
     <dimen name="fragment_playlists_no_found_image_margin_top">56dp</dimen>
     <dimen name="favorite_track_screen_track_list_margin_top">20dp</dimen>
+    <dimen name="margin_16dp">16dp</dimen>
+    <dimen name="margin_32dp">32dp</dimen>
+    <dimen name="padding_16dp">16dp</dimen>
+    <dimen name="test_size_22sp">22sp</dimen>
+    <dimen name="margin_12dp">12dp</dimen>
+    <dimen name="image_picker_width">312dp</dimen>
+    <dimen name="image_picker_height">312dp</dimen>
+    <dimen name="margin_24dp">24dp</dimen>
+    <dimen name="margin_26dp">26dp</dimen>
+    <dimen name="margin_17dp">17dp</dimen>
+    <dimen name="padding_12_5dp">12.5dp</dimen>
+    <dimen name="text_size_16sp">16sp</dimen>
+    <dimen name="corner_radius_8dp">8dp</dimen>
+    <dimen name="margin_4dp">4dp</dimen>
+    <dimen name="margin_164dp">164dp</dimen>
+    <dimen name="margin_180dp">180dp</dimen>
+    <dimen name="grid_spacing">2dp</dimen>
+    <dimen name="margin_13dp">13dp</dimen>
+    <dimen name="image_size_45dp">45dp</dimen>
+    <dimen name="margin_6dp">6dp</dimen>
+    <dimen name="margin_1dp">1dp</dimen>
+    <dimen name="margin_5dp">5dp</dimen>
 
 </resources>

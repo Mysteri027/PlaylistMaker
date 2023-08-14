@@ -1,6 +1,7 @@
 package com.example.playlistmaker.data.repository
 
 import android.media.MediaPlayer
+import android.util.Log
 import com.example.playlistmaker.domain.repository.MediaPlayerRepository
 
 class MediaPlayerRepositoryImpl(
@@ -12,6 +13,7 @@ class MediaPlayerRepositoryImpl(
         setOnPrepared: () -> Unit,
         setOnCompletion: () -> Unit
     ) {
+        Log.d("preparePlayer url", url)
         mediaPlayer.setDataSource(url)
         mediaPlayer.prepareAsync()
 
@@ -35,7 +37,7 @@ class MediaPlayerRepositoryImpl(
     }
 
     override fun releasePlayer() {
-        mediaPlayer.release()
+        mediaPlayer.reset()
     }
 
     override fun getCurrentPosition(): Int {

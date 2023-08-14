@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/search_screen_background">
@@ -20,7 +21,8 @@
         app:cornerRadius="@dimen/search_history_clear_button_corner_radius"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="gone" />
 
     <ImageView
         android:id="@+id/fragment_playlists_no_found_image"
@@ -30,9 +32,11 @@
         android:src="@drawable/not_found"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/fragment_playlists_add_button" />
+        app:layout_constraintTop_toBottomOf="@id/fragment_playlists_add_button"
+        tools:visibility="gone" />
 
     <TextView
+        android:id="@+id/fragment_playlists_no_found_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/favorite_track_screen_not_found_text_margin_top"
@@ -45,6 +49,23 @@
         android:textSize="@dimen/favorite_track_screen_not_found_text_text_size"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/fragment_playlists_no_found_image" />
+        app:layout_constraintTop_toBottomOf="@id/fragment_playlists_no_found_image"
+        tools:visibility="gone" />
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/fragment_playlists_list"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_16dp"
+        android:layout_marginTop="@dimen/margin_16dp"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fragment_playlists_add_button"
+        app:layout_constraintVertical_bias="0"
+        tools:itemCount="5"
+        tools:listitem="@layout/playlist_item" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,6 +3,7 @@ package com.example.playlistmaker.di
 import com.example.playlistmaker.domain.interactor.LocalStorageInteractor
 import com.example.playlistmaker.domain.interactor.MediaPlayerInteractor
 import com.example.playlistmaker.domain.interactor.NetworkInteractor
+import com.example.playlistmaker.domain.interactor.PlaylistInteractor
 import com.example.playlistmaker.domain.interactor.SettingsInteractor
 import com.example.playlistmaker.domain.interactor.SharingInteractor
 import com.example.playlistmaker.domain.interactor.TrackDatabaseInteractor
@@ -42,6 +43,12 @@ val domainModule = module {
     factory {
         TrackDatabaseInteractor(
             databaseRepository = get()
+        )
+    }
+
+    factory {
+        PlaylistInteractor(
+            playlistRepository = get()
         )
     }
 }
