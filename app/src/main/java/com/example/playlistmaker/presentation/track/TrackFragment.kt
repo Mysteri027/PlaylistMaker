@@ -16,6 +16,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentTrackBinding
 import com.example.playlistmaker.domain.model.Track
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
@@ -67,14 +68,27 @@ class TrackFragment : Fragment() {
             BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 when (newState) {
-                    BottomSheetBehavior.STATE_HIDDEN -> { binding.overlay.visibility = View.GONE }
-                    else -> { binding.overlay.visibility = View.VISIBLE }
+                    BottomSheetBehavior.STATE_HIDDEN -> {
+                        requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
+                            View.VISIBLE
+                        binding.overlay.visibility = View.GONE
+                    }
+
+                    else -> {
+                        requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
+                            View.GONE
+                        binding.overlay.visibility = View.VISIBLE
+                    }
                 }
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {}
 
         })
+
+        binding.overlay.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        }
 
         binding.trackScreenAddButton.setOnClickListener {
             viewModel.getPlayLists()
