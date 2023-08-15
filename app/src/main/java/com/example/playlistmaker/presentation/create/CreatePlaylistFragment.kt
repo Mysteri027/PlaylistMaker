@@ -187,11 +187,10 @@ class CreatePlaylistFragment : Fragment() {
                 }
 
                 is PermissionResult.Denied.DeniedPermanently -> {
-                    pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-//                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-//                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//                    intent.data = Uri.fromParts("package", requireContext().packageName, null)
-//                    requireContext().startActivity(intent)
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    intent.data = Uri.fromParts("package", requireContext().packageName, null)
+                    requireContext().startActivity(intent)
                 }
 
                 else -> {
