@@ -24,6 +24,7 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.CreatePlaylistFragmentBinding
 import com.example.playlistmaker.domain.model.Playlist
 import com.example.playlistmaker.utils.setImage
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.markodevcic.peko.PermissionResult
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -62,11 +63,16 @@ class CreatePlaylistFragment : Fragment() {
         initObservers()
         initPickMediaRegister()
 
+        requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
+            View.GONE
+
         confirmDialog = MaterialAlertDialogBuilder(requireContext())
             .setTitle("Завершить создание плейлиста?") // Заголовок диалога
             .setMessage("Все несохраненные данные будут потеряны") // Описание диалога
             .setNeutralButton("Отмена") { _, _ -> }
             .setPositiveButton("Завершить") { dialog, which ->
+                requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
+                    View.VISIBLE
                 findNavController().navigateUp()
             }
     }
@@ -110,6 +116,8 @@ class CreatePlaylistFragment : Fragment() {
                 if (isFieldsEmpty()) {
                     confirmDialog?.show()
                 } else {
+                    requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
+                        View.VISIBLE
                     findNavController().navigateUp()
                 }
             }
@@ -117,6 +125,9 @@ class CreatePlaylistFragment : Fragment() {
         })
 
         binding.createPlaylistBackButton.setOnClickListener {
+            requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
+                View.VISIBLE
+
             findNavController().navigateUp()
         }
 
@@ -153,6 +164,8 @@ class CreatePlaylistFragment : Fragment() {
             ).show()
 
             confirmDialog = null
+            requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
+                View.VISIBLE
             findNavController().navigateUp()
         }
     }

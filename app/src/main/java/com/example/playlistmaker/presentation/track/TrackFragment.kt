@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -53,8 +54,12 @@ class TrackFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
+            View.GONE
 
         binding.trackScreenBackButton.setOnClickListener {
+            requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
+                View.VISIBLE
             findNavController().navigateUp()
         }
 
@@ -69,14 +74,10 @@ class TrackFragment : Fragment() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 when (newState) {
                     BottomSheetBehavior.STATE_HIDDEN -> {
-                        requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
-                            View.VISIBLE
                         binding.overlay.visibility = View.GONE
                     }
 
                     else -> {
-                        requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
-                            View.GONE
                         binding.overlay.visibility = View.VISIBLE
                     }
                 }
@@ -102,6 +103,16 @@ class TrackFragment : Fragment() {
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
 
         }
+
+        requireActivity().onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
+                    View.VISIBLE
+
+                findNavController().navigateUp()
+            }
+
+        })
 
         viewModel.playlists.observe(viewLifecycleOwner) {
             if (it.isNotEmpty()) {
