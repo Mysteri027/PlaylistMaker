@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import com.example.playlistmaker.di.dataModule
 import com.example.playlistmaker.di.domainModule
 import com.example.playlistmaker.di.presentationModule
+import com.markodevcic.peko.PermissionRequester
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -32,6 +33,8 @@ class App : Application() {
                 listOf(presentationModule, dataModule, domainModule)
             )
         }
+
+        PermissionRequester.initialize(applicationContext)
     }
 
     private fun switchTheme(

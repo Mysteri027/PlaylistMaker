@@ -5,6 +5,8 @@ import android.content.SharedPreferences
 import android.media.MediaPlayer
 import androidx.room.Room
 import com.example.playlistmaker.data.db.TrackDatabase
+import com.example.playlistmaker.data.mapper.DatabaseMapperPlayListToEntity
+import com.example.playlistmaker.data.mapper.DatabaseMapperPlayListToModel
 import com.example.playlistmaker.data.mapper.DatabaseMapperToEntity
 import com.example.playlistmaker.data.mapper.DatabaseMapperToTrack
 import com.example.playlistmaker.data.network.ITunesSearchAPIService
@@ -15,13 +17,16 @@ import com.example.playlistmaker.data.repository.ExternalNavigatorRepositoryImpl
 import com.example.playlistmaker.data.repository.LocalStorageRepositoryImpl
 import com.example.playlistmaker.data.repository.MediaPlayerRepositoryImpl
 import com.example.playlistmaker.data.repository.NetworkRepositoryImpl
+import com.example.playlistmaker.data.repository.PlaylistRepositoryImpl
 import com.example.playlistmaker.data.repository.SettingRepositoryImpl
 import com.example.playlistmaker.data.searchhistory.SearchHistory
+import com.example.playlistmaker.domain.model.Playlist
 import com.example.playlistmaker.domain.repository.DatabaseRepository
 import com.example.playlistmaker.domain.repository.ExternalNavigatorRepository
 import com.example.playlistmaker.domain.repository.LocalStorageRepository
 import com.example.playlistmaker.domain.repository.MediaPlayerRepository
 import com.example.playlistmaker.domain.repository.NetworkRepository
+import com.example.playlistmaker.domain.repository.PlaylistRepository
 import com.example.playlistmaker.domain.repository.SettingRepository
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -116,6 +121,22 @@ val dataModule = module {
             trackDatabase = get(),
             entityToTrack = get(),
             trackToEntity = get()
+        )
+    }
+
+    factory {
+        DatabaseMapperPlayListToModel()
+    }
+
+    factory {
+        DatabaseMapperPlayListToEntity()
+    }
+
+    factory<PlaylistRepository> {
+        PlaylistRepositoryImpl(
+            database = get(),
+            databaseMapperPlayListToEntity = get(),
+            databaseMapperPlayListToModel = get(),
         )
     }
 }

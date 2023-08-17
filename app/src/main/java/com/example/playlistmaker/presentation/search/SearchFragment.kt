@@ -94,11 +94,6 @@ class SearchFragment : Fragment() {
         searchHistoryTrackListAdapter = null
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
-    }
-
     private fun setUpListeners() {
         searchHistoryTrackListAdapter?.trackClickListener = {
             viewModel.addTrackToHistory(it)
@@ -255,13 +250,7 @@ class SearchFragment : Fragment() {
         trackListAdapter?.notifyDataSetChanged()
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(SEARCH_TEXT, binding.searchText.text.toString())
-    }
-
     companion object {
-        const val SEARCH_TEXT = "SEARCH_TEXT"
         private const val CLICK_DEBOUNCE_DELAY = 1000L
         private const val SEARCH_DELAY = 2000L
     }

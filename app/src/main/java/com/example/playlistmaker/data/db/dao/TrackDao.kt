@@ -1,10 +1,10 @@
-package com.example.playlistmaker.data.db
+package com.example.playlistmaker.data.db.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.example.playlistmaker.data.db.entity.TrackEntity
 
 @Dao
 interface TrackDao {
@@ -17,6 +17,10 @@ interface TrackDao {
 
     @Query("SELECT * FROM track_table ORDER BY id DESC")
     suspend fun selectAllTracks(): List<TrackEntity>
+
+
+    @Query("SELECT * FROM track_table WHERE trackId = :id")
+    suspend fun getTracksById(id: Long): List<TrackEntity>
 
 
     @Query("SELECT trackId FROM track_table")
