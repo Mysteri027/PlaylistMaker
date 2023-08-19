@@ -17,6 +17,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentTrackBinding
 import com.example.playlistmaker.domain.model.Track
+import com.example.playlistmaker.presentation.create.CreatePlaylistFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -123,7 +124,10 @@ class TrackFragment : Fragment() {
         }
 
         binding.bottomSheetAddButton.setOnClickListener {
-            findNavController().navigate(R.id.action_trackFragment_to_createPlaylistFragment)
+            findNavController().navigate(
+                R.id.action_trackFragment_to_createPlaylistFragment,
+                CreatePlaylistFragment.newInstance(-1)
+            )
         }
 
         val track = requireArguments().getSerializable(ARGS_TRACK) as Track

@@ -6,7 +6,7 @@ import com.example.playlistmaker.domain.repository.PlaylistRepository
 import kotlinx.coroutines.flow.Flow
 
 class PlaylistInteractor(
-    private val playlistRepository: PlaylistRepository
+    private val playlistRepository: PlaylistRepository,
 ) {
     suspend fun addPlaylist(playlist: Playlist) {
         playlistRepository.addPlaylist(playlist)
@@ -24,5 +24,13 @@ class PlaylistInteractor(
 
     suspend fun addTrackToPlayList(track: Track, playlist: Playlist): Flow<Boolean> =
         playlistRepository.addTrackToPlayList(track, playlist)
+
+    suspend fun getPlaylistById(id: Long): Flow<Playlist> = playlistRepository.getPlaylistById(id)
+
+    suspend fun getTracksFromPlaylist(id: Long): Flow<List<Track>> =
+        playlistRepository.getTracksFromPlaylist(id)
+
+    suspend fun deleteTrackFromPlaylist(trackId: Long, playlistId: Long) =
+        playlistRepository.deleteTrackFromPlaylist(trackId, playlistId)
 
 }

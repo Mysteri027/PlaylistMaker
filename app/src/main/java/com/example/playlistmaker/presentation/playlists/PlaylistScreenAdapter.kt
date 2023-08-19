@@ -8,11 +8,13 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.PlaylistItemBinding
 import com.example.playlistmaker.domain.model.Playlist
+import com.example.playlistmaker.utils.inflectTrack
 import com.example.playlistmaker.utils.setImage
 
 class PlaylistScreenAdapter : Adapter<PlaylistScreenViewHolder>() {
 
     val playlists: ArrayList<Playlist> = arrayListOf()
+    var onPlaylistClicked: ((Playlist) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistScreenViewHolder {
         val binding =
@@ -23,11 +25,16 @@ class PlaylistScreenAdapter : Adapter<PlaylistScreenViewHolder>() {
     override fun getItemCount(): Int = playlists.size
 
     override fun onBindViewHolder(holder: PlaylistScreenViewHolder, position: Int) {
+        val playlist = playlists[position]
+        holder.itemView.setOnClickListener {
+            onPlaylistClicked?.invoke(playlist)
+        }
         holder.bind(playlists[position])
     }
 }
 
-class PlaylistScreenViewHolder(private val binding: PlaylistItemBinding) : ViewHolder(binding.root) {
+class PlaylistScreenViewHolder(private val binding: PlaylistItemBinding) :
+    ViewHolder(binding.root) {
 
     @SuppressLint("SetTextI18n")
     fun bind(playList: Playlist) {
@@ -36,12 +43,12 @@ class PlaylistScreenViewHolder(private val binding: PlaylistItemBinding) : ViewH
             itemView.resources.getDimensionPixelSize(R.dimen.corner_radius_8dp)
 
         if (playList.imageUri.toString() == "null") {
-            binding.playlistItemImage.setImage("", cornerRadius)
+            binding.playlistItemImage.setImage(cornerRadius)
         } else {
             binding.playlistItemImage.setImage(playList.imageUri!!, cornerRadius)
         }
 
         binding.playlistItemName.text = playList.name
-        binding.playlistItemTracksCount.text = "${playList.countTracks} треков"
+        binding.playlistItemTracksCount.text = inflectTrack(playList.countTracks)
     }
 }

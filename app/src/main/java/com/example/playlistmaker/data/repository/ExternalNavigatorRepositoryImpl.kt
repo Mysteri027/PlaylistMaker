@@ -14,7 +14,7 @@ class ExternalNavigatorRepositoryImpl(
     override fun shareLink(link: String) {
         val sendIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, context.resources.getString(R.string.yandex_practicum_link))
+            putExtra(Intent.EXTRA_TEXT, link)
             type = "text/plain"
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }

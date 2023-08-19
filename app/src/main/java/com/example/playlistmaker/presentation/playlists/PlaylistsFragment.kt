@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.example.playlistmaker.domain.model.Playlist
+import com.example.playlistmaker.presentation.create.CreatePlaylistFragment
+import com.example.playlistmaker.presentation.playlist.PlaylistFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistsFragment : Fragment() {
@@ -41,7 +43,17 @@ class PlaylistsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.fragmentPlaylistsAddButton.setOnClickListener {
-            findNavController().navigate(R.id.action_mediaLibraryFragment_to_createPlaylistFragment)
+            findNavController().navigate(
+                R.id.action_mediaLibraryFragment_to_createPlaylistFragment,
+                CreatePlaylistFragment.newInstance(-1)
+            )
+        }
+
+        adapter.onPlaylistClicked = { playlist ->
+            findNavController().navigate(
+                R.id.action_mediaLibraryFragment_to_playlistFragment,
+                PlaylistFragment.createArgs(playlist.id)
+            )
         }
 
         viewModel.getPlaylists()

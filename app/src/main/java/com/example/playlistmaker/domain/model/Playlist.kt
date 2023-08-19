@@ -1,6 +1,7 @@
 package com.example.playlistmaker.domain.model
 
 import android.net.Uri
+import java.io.Serializable
 
 data class Playlist(
     val id: Long = 0,
@@ -9,4 +10,4 @@ data class Playlist(
     val imageUri: Uri? = null,
     var trackList: String,
     var countTracks: Int,
-)
+) : Serializable

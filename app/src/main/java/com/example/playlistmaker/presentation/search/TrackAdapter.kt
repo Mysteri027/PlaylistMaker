@@ -16,6 +16,7 @@ class TrackAdapter : RecyclerView.Adapter<TrackViewHolder>() {
     var trackList: ArrayList<Track> = arrayListOf()
 
     var trackClickListener: ((Track) -> Unit)? = null
+    var trackOnLongClickListener: ((Track, Int) -> Unit)? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
         val binding = TrackItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return TrackViewHolder(binding)
@@ -26,6 +27,10 @@ class TrackAdapter : RecyclerView.Adapter<TrackViewHolder>() {
         holder.bind(track)
         holder.itemView.setOnClickListener {
             trackClickListener?.invoke(track)
+        }
+        holder.itemView.setOnLongClickListener {
+            trackOnLongClickListener?.invoke(track, position)
+            true
         }
     }
 

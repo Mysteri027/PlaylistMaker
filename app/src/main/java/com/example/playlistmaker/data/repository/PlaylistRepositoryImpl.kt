@@ -38,13 +38,22 @@ class PlaylistRepositoryImpl(
     override suspend fun addTrackToPlayList(track: Track, playlist: Playlist): Flow<Boolean> =
         flow {
             val gson = GsonBuilder().create()
-            val arrayTrackType = object : TypeToken<ArrayList<Long>>() {}.type
+            val arrayTrackType = object : TypeToken<ArrayList<Track>>() {}.type
 
             val playlistTracks =
-                gson.fromJson(playlist.trackList, arrayTrackType) ?: arrayListOf<Long>()
+                gson.fromJson(playlist.trackList, arrayTrackType) ?: arrayListOf<Track>()
 
-            if (!playlistTracks.contains(track.trackId)) {
-                playlistTracks.add(track.trackId)
+
+            var isInPlaylist = false
+
+            playlistTracks.forEach {
+                if (it.trackId == track.trackId) {
+                    isInPlaylist = true
+                }
+            }
+
+            if (!isInPlaylist) {
+                playlistTracks.add(track)
                 playlist.trackList = gson.toJson(playlistTracks)
                 playlist.countTracks++
 
@@ -53,5 +62,42 @@ class PlaylistRepositoryImpl(
             } else {
                 emit(false)
             }
+        }
+
+    override suspend fun getPlaylistById(id: Long): Flow<Playlist> = flow {
+        emit(databaseMapperPlayListToModel.map(database.playlistDao().getPlaylistById(id)))
+    }
+
+    override suspend fun getTracksFromPlaylist(id: Long): Flow<List<Track>> = flow {
+        val gson = GsonBuilder().create()
+        val listTrackType = object : TypeToken<List<Track>>() {}.type
+
+        val tracksString = database.playlistDao().getTracksFromPlaylist(id)
+        val tracks = gson.fromJson(tracksString, listTrackType) ?: listOf<Track>()
+
+        emit(tracks)
+    }
+
+    override suspend fun deleteTrackFromPlaylist(trackId: Long, playlistId: Long): Flow<Playlist> =
+        flow {
+            val gson = GsonBuilder().create()
+            val listTrackType = object : TypeToken<List<Track>>() {}.type
+
+            val playlist =
+                databaseMapperPlayListToModel.map(
+                    database.playlistDao().getPlaylistById(playlistId)
+                )
+
+            val tracksString = playlist.trackList
+            val tracks: MutableList<Track> =
+                gson.fromJson<MutableList<Track>?>(tracksString, listTrackType).toMutableList()
+
+            tracks.removeIf { it.trackId == trackId }
+
+            playlist.trackList = gson.toJson(tracks)
+            playlist.countTracks--
+            updatePlaylist(playlist)
+
+            emit(playlist)
         }
 }

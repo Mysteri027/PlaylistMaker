@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.PlaylistItemBottomSheetBinding
 import com.example.playlistmaker.domain.model.Playlist
+import com.example.playlistmaker.utils.inflectTrack
 import com.example.playlistmaker.utils.setImage
 
 class PlaylistAdapter : RecyclerView.Adapter<PlaylistViewHolder>() {
@@ -46,13 +47,13 @@ class PlaylistViewHolder(val binding: PlaylistItemBottomSheetBinding) :
 
 
         if (playlist.imageUri.toString() == "null") {
-            binding.cover.setImage("", cornerRadius)
+            binding.cover.setImage(cornerRadius)
         } else {
             binding.cover.setImage(playlist.imageUri!!, cornerRadius)
         }
 
         binding.playlistName.text = playlist.name
-        binding.trakcsCount.text = "${playlist.countTracks} треков"
+        binding.trakcsCount.text = inflectTrack(playlist.countTracks)
     }
 
 }

@@ -16,7 +16,7 @@ fun ImageView.setImage(uri: Uri, cornerRadius: Int) {
         .into(this)
 }
 
-fun ImageView.setImage(url: String = "", cornerRadius: Int) {
+fun ImageView.setImage(cornerRadius: Int) {
 
     val requestOptions = RequestOptions()
         .placeholder(R.drawable.track_placeholder)
@@ -29,4 +29,34 @@ fun ImageView.setImage(url: String = "", cornerRadius: Int) {
         .apply(requestOptions)
         .transform(CenterCrop(), RoundedCorners(cornerRadius))
         .into(this)
+}
+
+fun ImageView.setImage() {
+
+    val requestOptions = RequestOptions()
+        .placeholder(R.drawable.track_placeholder)
+        .error(R.drawable.track_placeholder)
+
+    Glide
+        .with(this.context)
+        .load(R.drawable.track_placeholder)
+        .transform(CenterCrop())
+        .apply(requestOptions)
+        .into(this)
+}
+
+fun inflectTrack(count: Int): String {
+    return when {
+        count % 10 == 1 && count % 100 != 11 -> "$count трек"
+        count % 10 in 2..4 && (count % 100 < 10 || count % 100 >= 20) -> "$count трека"
+        else -> "$count треков"
+    }
+}
+
+fun inflectMinutes(count: Int): String {
+    return when {
+        count % 10 == 1 && count % 100 != 11 -> "$count минута"
+        count % 10 in 2..4 && (count % 100 < 10 || count % 100 >= 20) -> "$count минуты"
+        else -> "$count минут"
+    }
 }
