@@ -37,7 +37,7 @@ class CreatePlaylistViewModel(
 
     fun onPlaylistCoverClicked() {
         viewModelScope.launch {
-            if (Build.VERSION.SDK_INT > 33) {
+            if (Build.VERSION.SDK_INT >= 33) {
                 register.request(Manifest.permission.READ_MEDIA_IMAGES)
             } else {
                 register.request(Manifest.permission.READ_EXTERNAL_STORAGE)

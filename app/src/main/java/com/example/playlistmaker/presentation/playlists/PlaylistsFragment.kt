@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -28,7 +29,9 @@ class PlaylistsFragment : Fragment() {
 
     private var _binding: FragmentPlaylistsBinding? = null
     private val binding get() = _binding!!
-    private val adapter = PlaylistScreenAdapter()
+    private val adapter by lazy {
+        PlaylistScreenAdapter()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,14 +48,14 @@ class PlaylistsFragment : Fragment() {
         binding.fragmentPlaylistsAddButton.setOnClickListener {
             findNavController().navigate(
                 R.id.action_mediaLibraryFragment_to_createPlaylistFragment,
-                CreatePlaylistFragment.newInstance(-1)
+                bundleOf(CreatePlaylistFragment.NAV_ARG to CreatePlaylistFragment.CREATE_FLAG)
             )
         }
 
         adapter.onPlaylistClicked = { playlist ->
             findNavController().navigate(
                 R.id.action_mediaLibraryFragment_to_playlistFragment,
-                PlaylistFragment.createArgs(playlist.id)
+                bundleOf(PlaylistFragment.ARGS_PLAYLIST to playlist.id)
             )
         }
 

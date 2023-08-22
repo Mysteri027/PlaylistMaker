@@ -75,7 +75,7 @@ class PlaylistRepositoryImpl(
         val tracksString = database.playlistDao().getTracksFromPlaylist(id)
         val tracks = gson.fromJson(tracksString, listTrackType) ?: listOf<Track>()
 
-        emit(tracks)
+        emit(tracks.reversed())
     }
 
     override suspend fun deleteTrackFromPlaylist(trackId: Long, playlistId: Long): Flow<Playlist> =

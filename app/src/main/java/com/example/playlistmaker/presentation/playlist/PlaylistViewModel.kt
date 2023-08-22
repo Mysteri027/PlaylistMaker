@@ -1,15 +1,16 @@
 package com.example.playlistmaker.presentation.playlist
 
+import android.content.res.Resources
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.interactor.PlaylistInteractor
 import com.example.playlistmaker.domain.interactor.SharingInteractor
 import com.example.playlistmaker.domain.model.Playlist
 import com.example.playlistmaker.domain.model.Track
-import com.example.playlistmaker.utils.inflectMinutes
-import com.example.playlistmaker.utils.inflectTrack
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -67,16 +68,21 @@ class PlaylistViewModel(
         return tracks.value?.isEmpty() ?: true
     }
 
-    fun getShareString(): String {
-        var shareString = inflectTrack(tracks.value!!.size) + "\n"
+    fun getShareString(resources: Resources): String {
+        var shareString =
+            playlist.value?.name + "\n" +
+            playlist.value?.description + "\n" +
+            resources.getQuantityString(R.plurals.plurals_tracks, tracks.value?.size ?: 0, tracks.value?.size ?: 0) + "\n"
 
+        Log.d("playlist.value?.description", playlist.value?.description.toString())
         tracks.value?.forEachIndexed { index, track ->
-            shareString += "${index + 1}. ${track.artistName} - ${track.trackName} " + inflectMinutes(
-                SimpleDateFormat(
-                    "mm",
-                    Locale.getDefault()
-                ).format(track.trackTimeMillis.toLong()).toInt()
-            ) + "\n"
+            shareString += "${index + 1}. ${track.artistName} - ${track.trackName} (" + resources.getQuantityString(
+                R.plurals.plurals_minutes,
+                SimpleDateFormat("mm", Locale.getDefault()).format(track.trackTimeMillis.toLong())
+                    .toInt(),
+                SimpleDateFormat("mm", Locale.getDefault()).format(track.trackTimeMillis.toLong())
+                    .toInt()
+            ) + ") \n"
         }
 
         return shareString

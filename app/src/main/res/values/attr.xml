@@ -35,4 +35,6 @@
     <attr name="bottom_button_active_color" format="reference"/>
     <attr name="bottom_button_not_active_color" format="reference"/>
 
+    <attr name="create_playlist_screen_hint_text_color" format="reference"/>
+
 </resources>

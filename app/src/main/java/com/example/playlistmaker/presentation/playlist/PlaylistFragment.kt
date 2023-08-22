@@ -13,10 +13,7 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistBinding
 import com.example.playlistmaker.domain.model.Playlist
 import com.example.playlistmaker.presentation.create.CreatePlaylistFragment
-import com.example.playlistmaker.presentation.search.TrackAdapter
 import com.example.playlistmaker.presentation.track.TrackFragment
-import com.example.playlistmaker.utils.inflectMinutes
-import com.example.playlistmaker.utils.inflectTrack
 import com.example.playlistmaker.utils.setImage
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -28,16 +25,15 @@ import java.util.Locale
 class PlaylistFragment : Fragment() {
 
     companion object {
-        private const val ARGS_PLAYLIST = "ARGS_PLAYLIST"
-
-        fun createArgs(playlistId: Long): Bundle =
-            bundleOf(ARGS_PLAYLIST to playlistId)
+        const val ARGS_PLAYLIST = "ARGS_PLAYLIST"
     }
 
     private var _binding: FragmentPlaylistBinding? = null
     private val binding get() = _binding!!
     private val viewModel: PlaylistViewModel by viewModel()
-    private val adapter = TrackAdapter()
+    private val adapter by lazy {
+        PlaylistTrackAdapter()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -71,12 +67,17 @@ class PlaylistFragment : Fragment() {
             adapter.trackList.addAll(tracks)
             adapter.notifyDataSetChanged()
 
-            binding.fragmentPlaylistMinutesCount.text = inflectMinutes(
-                SimpleDateFormat(
-                    "mm",
-                    Locale.getDefault()
-                ).format(viewModel.getDurationOfTracks()).toInt()
+            binding.fragmentPlaylistMinutesCount.text = resources.getQuantityString(
+                R.plurals.plurals_minutes,
+                SimpleDateFormat("mm", Locale.getDefault()).format(
+                    viewModel.getDurationOfTracks().toInt()
+                ).toInt(),
+                SimpleDateFormat("mm", Locale.getDefault()).format(
+                    viewModel.getDurationOfTracks().toInt()
+                ).toInt()
             )
+
+
         }
     }
 
@@ -84,9 +85,18 @@ class PlaylistFragment : Fragment() {
         with(binding) {
             fragmentPlaylistName.text = playlist.name
             playlistsBottomSheetMenuName.text = playlist.name
-
-            fragmentPlaylistTrackCount.text = inflectTrack(playlist.countTracks)
-            playlistsBottomSheetMenuCountTracks.text = inflectTrack(playlist.countTracks)
+            fragmentPlaylistTrackCount.text =
+                resources.getQuantityString(
+                    R.plurals.plurals_tracks,
+                    playlist.countTracks,
+                    playlist.countTracks
+                )
+            playlistsBottomSheetMenuCountTracks.text =
+                resources.getQuantityString(
+                    R.plurals.plurals_tracks,
+                    playlist.countTracks,
+                    playlist.countTracks
+                )
 
             fragmentPlaylistYear.text = playlist.description
 
@@ -109,7 +119,7 @@ class PlaylistFragment : Fragment() {
                 Toast.LENGTH_SHORT
             ).show()
         } else {
-            val shareString = viewModel.getShareString()
+            val shareString = viewModel.getShareString(resources)
             viewModel.shareTracks(shareString)
         }
     }
@@ -122,14 +132,14 @@ class PlaylistFragment : Fragment() {
             findNavController().navigateUp()
         }
 
-        adapter.trackClickListener = {
+        adapter.trackClickListener = { track ->
             findNavController().navigate(
                 R.id.action_playlistFragment_to_trackFragment,
-                TrackFragment.createArgs(it)
+                bundleOf(TrackFragment.ARGS_TRACK to track)
             )
         }
 
-        adapter.trackOnLongClickListener = { track, poition ->
+        adapter.trackOnLongClickListener = { track, _ ->
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Хотите удалить трек?") // Заголовок диалога
                 .setNegativeButton("Нет") { _, _ -> }
@@ -178,7 +188,7 @@ class PlaylistFragment : Fragment() {
         binding.playlistsBottomSheetMenuEdit.setOnClickListener {
             findNavController().navigate(
                 R.id.action_playlistFragment_to_createPlaylistFragment,
-                CreatePlaylistFragment.newInstance(playlistId)
+                bundleOf(CreatePlaylistFragment.NAV_ARG to playlistId)
             )
         }
 

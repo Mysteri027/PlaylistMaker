@@ -20,17 +20,22 @@ class PlaylistInteractor(
         playlistRepository.updatePlaylist(playlist)
     }
 
-    suspend fun getSavedPlaylists(): Flow<List<Playlist>> = playlistRepository.getSavedPlaylists()
+    suspend fun getSavedPlaylists(): Flow<List<Playlist>> {
+        return playlistRepository.getSavedPlaylists()
+    }
 
-    suspend fun addTrackToPlayList(track: Track, playlist: Playlist): Flow<Boolean> =
-        playlistRepository.addTrackToPlayList(track, playlist)
+    suspend fun addTrackToPlayList(track: Track, playlist: Playlist): Flow<Boolean> {
+        return playlistRepository.addTrackToPlayList(track, playlist)
+    }
 
     suspend fun getPlaylistById(id: Long): Flow<Playlist> = playlistRepository.getPlaylistById(id)
 
-    suspend fun getTracksFromPlaylist(id: Long): Flow<List<Track>> =
-        playlistRepository.getTracksFromPlaylist(id)
+    suspend fun getTracksFromPlaylist(id: Long): Flow<List<Track>> {
+        return playlistRepository.getTracksFromPlaylist(id)
+    }
 
-    suspend fun deleteTrackFromPlaylist(trackId: Long, playlistId: Long) =
-        playlistRepository.deleteTrackFromPlaylist(trackId, playlistId)
+    suspend fun deleteTrackFromPlaylist(trackId: Long, playlistId: Long): Flow<Playlist> {
+        return playlistRepository.deleteTrackFromPlaylist(trackId, playlistId)
+    }
 
 }

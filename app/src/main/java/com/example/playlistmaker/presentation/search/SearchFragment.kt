@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -27,9 +28,12 @@ class SearchFragment : Fragment() {
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
 
-    private var trackListAdapter: TrackAdapter? = null
-    private var searchHistoryTrackListAdapter: TrackAdapter? = null
-
+    private val trackListAdapter by lazy {
+        TrackAdapter()
+    }
+    private val searchHistoryTrackListAdapter by lazy {
+        TrackAdapter()
+    }
     private val viewModel: SearchViewModel by viewModel()
 
     private lateinit var onTrackClickDebounce: (Track) -> Unit
@@ -57,9 +61,6 @@ class SearchFragment : Fragment() {
             }
             Log.d("SearchScreenState", screenState.toString())
         }
-
-        trackListAdapter = TrackAdapter()
-        searchHistoryTrackListAdapter = TrackAdapter()
 
         setUpListeners()
 
@@ -90,17 +91,15 @@ class SearchFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        trackListAdapter = null
-        searchHistoryTrackListAdapter = null
     }
 
     private fun setUpListeners() {
-        searchHistoryTrackListAdapter?.trackClickListener = {
+        searchHistoryTrackListAdapter.trackClickListener = {
             viewModel.addTrackToHistory(it)
             onTrackClickDebounce(it)
         }
 
-        trackListAdapter?.trackClickListener = {
+        trackListAdapter.trackClickListener = {
             viewModel.addTrackToHistory(it)
 
             onTrackClickDebounce(it)
@@ -167,7 +166,7 @@ class SearchFragment : Fragment() {
     private fun openTrackScreen(track: Track) {
         findNavController().navigate(
             R.id.action_searchFragment_to_trackFragment,
-            TrackFragment.createArgs(track)
+            bundleOf(TrackFragment.ARGS_TRACK to track)
         )
     }
 

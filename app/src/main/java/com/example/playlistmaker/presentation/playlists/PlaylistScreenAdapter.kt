@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.PlaylistItemBinding
 import com.example.playlistmaker.domain.model.Playlist
-import com.example.playlistmaker.utils.inflectTrack
 import com.example.playlistmaker.utils.setImage
 
 class PlaylistScreenAdapter : Adapter<PlaylistScreenViewHolder>() {
@@ -49,6 +48,7 @@ class PlaylistScreenViewHolder(private val binding: PlaylistItemBinding) :
         }
 
         binding.playlistItemName.text = playList.name
-        binding.playlistItemTracksCount.text = inflectTrack(playList.countTracks)
+        binding.playlistItemTracksCount.text =
+            itemView.resources.getQuantityString(R.plurals.plurals_tracks, playList.countTracks, playList.countTracks )
     }
 }

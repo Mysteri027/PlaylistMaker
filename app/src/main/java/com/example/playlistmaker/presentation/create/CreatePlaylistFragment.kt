@@ -17,7 +17,6 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.ColorRes
 import androidx.core.net.toUri
-import androidx.core.os.bundleOf
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -38,8 +37,7 @@ class CreatePlaylistFragment : Fragment() {
         private const val QUALITY_IMAGE = 30
 
         const val NAV_ARG = "NAV_ARG"
-
-        fun newInstance(playlistId: Long) = bundleOf(NAV_ARG to playlistId)
+        const val CREATE_FLAG = -1L
     }
 
     private var _binding: CreatePlaylistFragmentBinding? = null
@@ -47,7 +45,7 @@ class CreatePlaylistFragment : Fragment() {
 
     private val viewModel: CreatePlaylistViewModel by viewModel()
 
-    private lateinit var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>
+    private var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>? = null
     private var confirmDialog: MaterialAlertDialogBuilder? = null
     private var imageUri: Uri? = null
     private var isEdit = false
@@ -71,7 +69,7 @@ class CreatePlaylistFragment : Fragment() {
 
         val playlistId = requireArguments().getLong(NAV_ARG)
 
-        if (playlistId != -1L) {
+        if (isPlaylistLoaded(playlistId)) {
             viewModel.getPlaylist(playlistId)
             initEditScreen()
         }
@@ -94,12 +92,12 @@ class CreatePlaylistFragment : Fragment() {
         requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
             View.GONE
 
-        if (playlist != null) {
+        if (playlist == null) {
             confirmDialog = MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Завершить создание плейлиста?") // Заголовок диалога
                 .setMessage("Все несохраненные данные будут потеряны") // Описание диалога
                 .setNeutralButton("Отмена") { _, _ -> }
-                .setPositiveButton("Завершить") { dialog, which ->
+                .setPositiveButton("Завершить") { _, _ ->
                     requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
                         View.VISIBLE
                     findNavController().navigateUp()
@@ -109,7 +107,7 @@ class CreatePlaylistFragment : Fragment() {
 
     private fun initEditScreen() {
         isEdit = true
-        binding.createPlaylistCreateButton.text = "Сохранить"
+        binding.createPlaylistCreateButton.text = getString(R.string.save)
     }
 
     private fun initPickMediaRegister() {
@@ -234,7 +232,7 @@ class CreatePlaylistFragment : Fragment() {
         viewModel.permissionState.observe(viewLifecycleOwner) { permissionState ->
             when (permissionState) {
                 is PermissionResult.Granted -> {
-                    pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    pickMedia?.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                 }
 
                 is PermissionResult.Denied.NeedsRationale -> {
@@ -259,6 +257,10 @@ class CreatePlaylistFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun isPlaylistLoaded (flag: Long): Boolean {
+        return flag != CREATE_FLAG
     }
 
     private fun renderUi(isButtonEnabled: Boolean, @ColorRes buttonColor: Int) {
