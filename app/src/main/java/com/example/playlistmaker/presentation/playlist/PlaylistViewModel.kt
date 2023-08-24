@@ -89,7 +89,7 @@ class PlaylistViewModel(
     }
 
     fun shareTracks(tracks: String) {
-        sharingInteractor.shareApp(tracks)
+        sharingInteractor.sharePlaylist(tracks)
     }
 
     fun deletePlayList(playlistId: Long) {

@@ -3,7 +3,6 @@ package com.example.playlistmaker.data.repository
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.model.EmailData
 import com.example.playlistmaker.domain.repository.ExternalNavigatorRepository
 
@@ -20,6 +19,17 @@ class ExternalNavigatorRepositoryImpl(
         }
 
         context.startActivity(sendIntent)
+    }
+
+    override fun sharePlaylist(playlist: String) {
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, playlist)
+            type = "text/plain"
+        }
+
+        val shareIntent = Intent.createChooser(sendIntent, "Выберите приложение для отправки")
+        context.startActivity(shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
     }
 
     override fun openLink(link: String) {
