@@ -3,6 +3,7 @@ package com.example.playlistmaker.di
 import com.example.playlistmaker.presentation.create.CreatePlaylistViewModel
 import com.example.playlistmaker.presentation.favorite.FavoriteTracksViewModel
 import com.example.playlistmaker.presentation.main.MainViewModel
+import com.example.playlistmaker.presentation.playlist.PlaylistViewModel
 import com.example.playlistmaker.presentation.playlists.PlaylistsViewModel
 import com.example.playlistmaker.presentation.search.SearchViewModel
 import com.example.playlistmaker.presentation.settings.SettingsViewModel
@@ -53,6 +54,13 @@ val presentationModule = module {
     viewModel {
         CreatePlaylistViewModel(
             playlistInteractor = get()
+        )
+    }
+
+    viewModel {
+        PlaylistViewModel(
+            playlistInteractor = get(),
+            sharingInteractor = get()
         )
     }
 }

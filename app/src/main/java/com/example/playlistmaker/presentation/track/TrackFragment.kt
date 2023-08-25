@@ -2,6 +2,7 @@
 
 package com.example.playlistmaker.presentation.track
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -17,6 +18,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentTrackBinding
 import com.example.playlistmaker.domain.model.Track
+import com.example.playlistmaker.presentation.create.CreatePlaylistFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -27,9 +29,6 @@ class TrackFragment : Fragment() {
 
     companion object {
         const val ARGS_TRACK = "ARGS_TRACK"
-
-        fun createArgs(track: Track): Bundle =
-            bundleOf(ARGS_TRACK to track)
     }
 
 
@@ -40,7 +39,9 @@ class TrackFragment : Fragment() {
 
     private lateinit var trackPreviewUrl: String
 
-    private val playlistAdapter = PlaylistAdapter()
+    private val playlistAdapter by lazy {
+        PlaylistAdapter()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -123,10 +124,17 @@ class TrackFragment : Fragment() {
         }
 
         binding.bottomSheetAddButton.setOnClickListener {
-            findNavController().navigate(R.id.action_trackFragment_to_createPlaylistFragment)
+            findNavController().navigate(
+                R.id.action_trackFragment_to_createPlaylistFragment,
+                bundleOf(CreatePlaylistFragment.NAV_ARG to CreatePlaylistFragment.CREATE_FLAG)
+            )
         }
 
-        val track = requireArguments().getSerializable(ARGS_TRACK) as Track
+        val track: Track = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requireArguments().getParcelable(ARGS_TRACK, Track::class.java) as Track
+        } else {
+            requireArguments().getSerializable(ARGS_TRACK) as Track
+        }
         viewModel.checkIsFavorite(track)
         val trackCoverUrl = viewModel.getTrackImage(track.artworkUrl100)
 

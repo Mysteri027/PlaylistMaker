@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
@@ -22,7 +23,9 @@ class FavoriteTracksFragment : Fragment(R.layout.fragment_favorite_tracks) {
     private var _binding: FragmentFavoriteTracksBinding? = null
     private val binding get() = _binding!!
 
-    private val trackAdapter = TrackAdapter()
+    private val trackAdapter by lazy {
+        TrackAdapter()
+    }
 
     companion object {
         fun newInstance(): FavoriteTracksFragment {
@@ -47,7 +50,7 @@ class FavoriteTracksFragment : Fragment(R.layout.fragment_favorite_tracks) {
             track.isFavorite = true
             findNavController().navigate(
                 R.id.action_mediaLibraryFragment_to_trackFragment,
-                TrackFragment.createArgs(track)
+                bundleOf(TrackFragment.ARGS_TRACK to track)
             )
         }
 

@@ -35,6 +35,9 @@ class CreatePlaylistFragment : Fragment() {
 
     companion object {
         private const val QUALITY_IMAGE = 30
+
+        const val NAV_ARG = "NAV_ARG"
+        const val CREATE_FLAG = -1L
     }
 
     private var _binding: CreatePlaylistFragmentBinding? = null
@@ -42,10 +45,11 @@ class CreatePlaylistFragment : Fragment() {
 
     private val viewModel: CreatePlaylistViewModel by viewModel()
 
-    private lateinit var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>
+    private var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>? = null
     private var confirmDialog: MaterialAlertDialogBuilder? = null
     private var imageUri: Uri? = null
-
+    private var isEdit = false
+    private var playlist: Playlist? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,18 +67,47 @@ class CreatePlaylistFragment : Fragment() {
         initObservers()
         initPickMediaRegister()
 
+        val playlistId = requireArguments().getLong(NAV_ARG)
+
+        if (isPlaylistLoaded(playlistId)) {
+            viewModel.getPlaylist(playlistId)
+            initEditScreen()
+        }
+
+        viewModel.playlist.observe(viewLifecycleOwner) {
+            playlist = it
+            binding.createPlaylistName.setText(it.name)
+            binding.createPlaylistDescription.setText(it.description)
+            imageUri = it.imageUri
+            if (it.imageUri == null) {
+                binding.createPlaylistImagePicker.setImage()
+            } else {
+
+                val cornerRadius = resources.getDimensionPixelSize(R.dimen.corner_radius_8dp)
+
+                binding.createPlaylistImagePicker.setImage(it.imageUri, cornerRadius)
+            }
+        }
+
         requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
             View.GONE
 
-        confirmDialog = MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Завершить создание плейлиста?") // Заголовок диалога
-            .setMessage("Все несохраненные данные будут потеряны") // Описание диалога
-            .setNeutralButton("Отмена") { _, _ -> }
-            .setPositiveButton("Завершить") { dialog, which ->
-                requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
-                    View.VISIBLE
-                findNavController().navigateUp()
-            }
+        if (playlist == null) {
+            confirmDialog = MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Завершить создание плейлиста?") // Заголовок диалога
+                .setMessage("Все несохраненные данные будут потеряны") // Описание диалога
+                .setNeutralButton("Отмена") { _, _ -> }
+                .setPositiveButton("Завершить") { _, _ ->
+                    requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
+                        View.VISIBLE
+                    findNavController().navigateUp()
+                }
+        }
+    }
+
+    private fun initEditScreen() {
+        isEdit = true
+        binding.createPlaylistCreateButton.text = getString(R.string.save)
     }
 
     private fun initPickMediaRegister() {
@@ -113,7 +146,7 @@ class CreatePlaylistFragment : Fragment() {
 
         requireActivity().onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (isFieldsEmpty()) {
+                if (isFieldsEmpty() and (playlist == null)) {
                     confirmDialog?.show()
                 } else {
                     requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
@@ -146,24 +179,37 @@ class CreatePlaylistFragment : Fragment() {
 
         binding.createPlaylistCreateButton.setOnClickListener {
 
-            val playlist = Playlist(
-                name = binding.createPlaylistName.text.toString(),
-                description = binding.createPlaylistDescription.text.toString(),
-                imageUri = imageUri,
-                trackList = "",
-                countTracks = 0
+            if (playlist != null) {
+                val newPlaylist = Playlist(
+                    id = playlist!!.id,
+                    name = binding.createPlaylistName.text.toString(),
+                    description = binding.createPlaylistDescription.text.toString(),
+                    imageUri = imageUri,
+                    trackList = playlist!!.trackList,
+                    countTracks = playlist!!.countTracks,
+                )
+                viewModel.updatePlaylist(newPlaylist)
+            } else {
 
-            )
+                val newPlaylist = Playlist(
+                    name = binding.createPlaylistName.text.toString(),
+                    description = binding.createPlaylistDescription.text.toString(),
+                    imageUri = imageUri,
+                    trackList = "",
+                    countTracks = 0
+                )
 
-            viewModel.savePlayList(playlist)
+                viewModel.savePlayList(newPlaylist)
 
-            Toast.makeText(
-                requireContext(),
-                "Плейлист ${playlist.name} создан",
-                Toast.LENGTH_SHORT
-            ).show()
+                Toast.makeText(
+                    requireContext(),
+                    "Плейлист ${newPlaylist.name} создан",
+                    Toast.LENGTH_SHORT
+                ).show()
 
-            confirmDialog = null
+                confirmDialog = null
+            }
+
             requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility =
                 View.VISIBLE
             findNavController().navigateUp()
@@ -186,7 +232,7 @@ class CreatePlaylistFragment : Fragment() {
         viewModel.permissionState.observe(viewLifecycleOwner) { permissionState ->
             when (permissionState) {
                 is PermissionResult.Granted -> {
-                    pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    pickMedia?.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                 }
 
                 is PermissionResult.Denied.NeedsRationale -> {
@@ -211,6 +257,10 @@ class CreatePlaylistFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun isPlaylistLoaded (flag: Long): Boolean {
+        return flag != CREATE_FLAG
     }
 
     private fun renderUi(isButtonEnabled: Boolean, @ColorRes buttonColor: Int) {

@@ -2,7 +2,6 @@ package com.example.playlistmaker.domain.interactor
 
 import com.example.playlistmaker.domain.model.EmailData
 import com.example.playlistmaker.domain.repository.ExternalNavigatorRepository
-import com.example.playlistmaker.domain.repository.SettingRepository
 
 class SharingInteractor(
     private val externalNavigatorRepository: ExternalNavigatorRepository
@@ -10,7 +9,10 @@ class SharingInteractor(
 
     fun shareApp(link: String) {
         externalNavigatorRepository.shareLink(link)
+    }
 
+    fun sharePlaylist(playlist: String) {
+        externalNavigatorRepository.sharePlaylist(playlist)
     }
 
     fun openTerms(link: String) {

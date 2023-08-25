@@ -49,5 +49,7 @@
         <item name="bottom_button_active_color">@color/yp_blue</item>
         <item name="bottom_button_not_active_color">@color/yp_white</item>
 
+        <item name="create_playlist_screen_hint_text_color">@color/yp_white</item>
+
     </style>
 </resources>

@@ -7,4 +7,6 @@ interface DatabaseRepository {
     suspend fun addTrack(track: Track)
     suspend fun deleteTrack(id: Long)
     suspend fun getAllTracks(): Flow<List<Track>>
+
+    suspend fun getTrackById(id: Long): Track
 }

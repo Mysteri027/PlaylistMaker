@@ -5,12 +5,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.example.playlistmaker.domain.model.Playlist
+import com.example.playlistmaker.presentation.create.CreatePlaylistFragment
+import com.example.playlistmaker.presentation.playlist.PlaylistFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistsFragment : Fragment() {
@@ -26,7 +29,9 @@ class PlaylistsFragment : Fragment() {
 
     private var _binding: FragmentPlaylistsBinding? = null
     private val binding get() = _binding!!
-    private val adapter = PlaylistScreenAdapter()
+    private val adapter by lazy {
+        PlaylistScreenAdapter()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,7 +46,17 @@ class PlaylistsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.fragmentPlaylistsAddButton.setOnClickListener {
-            findNavController().navigate(R.id.action_mediaLibraryFragment_to_createPlaylistFragment)
+            findNavController().navigate(
+                R.id.action_mediaLibraryFragment_to_createPlaylistFragment,
+                bundleOf(CreatePlaylistFragment.NAV_ARG to CreatePlaylistFragment.CREATE_FLAG)
+            )
+        }
+
+        adapter.onPlaylistClicked = { playlist ->
+            findNavController().navigate(
+                R.id.action_mediaLibraryFragment_to_playlistFragment,
+                bundleOf(PlaylistFragment.ARGS_PLAYLIST to playlist.id)
+            )
         }
 
         viewModel.getPlaylists()

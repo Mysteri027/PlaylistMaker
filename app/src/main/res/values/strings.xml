@@ -39,6 +39,33 @@
     <string name="playlist_name">Название*</string>
     <string name="playlist_description">Описание</string>
     <string name="create">Создать</string>
+    <string name="save">Сохранить</string>
     <string name="playlists">playlists</string>
     <string name="rationale_permission_message">Необходимо разрешение для просмотра галереи</string>
+    <string name="back_button">back button</string>
+    <string name="playlist_image">playlist image</string>
+    <string name="more_button">more button</string>
+    <string name="dot">dot</string>
+    <string name="share">Поделиться</string>
+    <string name="edit_info">Редактировать информацию</string>
+    <string name="delete_playlist">Удалить плейлист</string>
+
+
+    <plurals name="plurals_tracks">
+        <item quantity="zero">0 треков</item>
+        <item quantity="one">%d трек</item>
+        <item quantity="two">%d трека</item>
+        <item quantity="few">%d треков</item>
+        <item quantity="many">%d треков</item>
+        <item quantity="other">%d треков</item>
+    </plurals>
+
+    <plurals name="plurals_minutes">
+        <item quantity="zero">0 минут</item>
+        <item quantity="one">%d минута</item>
+        <item quantity="two">%d минуты</item>
+        <item quantity="few">%d минуты</item>
+        <item quantity="many">%d минут</item>
+        <item quantity="other">%d минут</item>
+    </plurals>
 </resources>

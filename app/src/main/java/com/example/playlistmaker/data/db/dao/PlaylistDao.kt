@@ -23,4 +23,10 @@ interface PlaylistDao {
 
     @Query("SELECT * FROM playlist_table ORDER BY id DESC;")
     suspend fun getSavedPlaylists(): List<PlaylistEntity>
+
+    @Query("SELECT * FROM playlist_table WHERE id = :id")
+    suspend fun getPlaylistById(id: Long): PlaylistEntity
+
+    @Query("SELECT trackList FROM playlist_table WHERE id = :id")
+    suspend fun getTracksFromPlaylist(id: Long): String
 }

@@ -22,6 +22,9 @@ class CreatePlaylistViewModel(
     private val _permissionState = MutableLiveData<PermissionResult>()
     val permissionState: LiveData<PermissionResult> = _permissionState
 
+    private val _playlist = MutableLiveData<Playlist>()
+    val playlist: LiveData<Playlist> = _playlist
+
     private val register = PermissionRequester.instance()
 
     fun setEmptyState() {
@@ -34,7 +37,7 @@ class CreatePlaylistViewModel(
 
     fun onPlaylistCoverClicked() {
         viewModelScope.launch {
-            if (Build.VERSION.SDK_INT > 33) {
+            if (Build.VERSION.SDK_INT >= 33) {
                 register.request(Manifest.permission.READ_MEDIA_IMAGES)
             } else {
                 register.request(Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -47,6 +50,20 @@ class CreatePlaylistViewModel(
     fun savePlayList(playlist: Playlist) {
         viewModelScope.launch {
             playlistInteractor.addPlaylist(playlist)
+        }
+    }
+
+    fun getPlaylist(playlistId: Long) {
+        viewModelScope.launch {
+            playlistInteractor.getPlaylistById(playlistId).collect {
+                _playlist.postValue(it)
+            }
+        }
+    }
+
+    fun updatePlaylist(playlist: Playlist) {
+        viewModelScope.launch {
+            playlistInteractor.updatePlaylist(playlist)
         }
     }
 }

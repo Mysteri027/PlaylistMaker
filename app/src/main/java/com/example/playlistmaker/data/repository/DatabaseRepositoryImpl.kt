@@ -3,11 +3,8 @@ package com.example.playlistmaker.data.repository
 import com.example.playlistmaker.data.db.TrackDatabase
 import com.example.playlistmaker.data.mapper.DatabaseMapperToEntity
 import com.example.playlistmaker.data.mapper.DatabaseMapperToTrack
-import com.example.playlistmaker.domain.model.Playlist
 import com.example.playlistmaker.domain.model.Track
 import com.example.playlistmaker.domain.repository.DatabaseRepository
-import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -29,5 +26,9 @@ class DatabaseRepositoryImpl(
         emit(trackDatabase.trackDao().selectAllTracks().map {
             entityToTrack.map(it)
         })
+    }
+
+    override suspend fun getTrackById(id: Long): Track {
+        return entityToTrack.map(trackDatabase.trackDao().getTracksById(id))
     }
 }

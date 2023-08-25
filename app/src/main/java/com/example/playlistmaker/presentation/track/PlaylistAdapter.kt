@@ -46,13 +46,18 @@ class PlaylistViewHolder(val binding: PlaylistItemBottomSheetBinding) :
 
 
         if (playlist.imageUri.toString() == "null") {
-            binding.cover.setImage("", cornerRadius)
+            binding.cover.setImage(cornerRadius)
         } else {
             binding.cover.setImage(playlist.imageUri!!, cornerRadius)
         }
 
         binding.playlistName.text = playlist.name
-        binding.trakcsCount.text = "${playlist.countTracks} треков"
+        binding.trakcsCount.text =
+            itemView.resources.getQuantityString(
+                R.plurals.plurals_tracks,
+                playlist.countTracks,
+                playlist.countTracks
+            )
     }
 
 }

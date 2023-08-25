@@ -16,7 +16,7 @@ fun ImageView.setImage(uri: Uri, cornerRadius: Int) {
         .into(this)
 }
 
-fun ImageView.setImage(url: String = "", cornerRadius: Int) {
+fun ImageView.setImage(cornerRadius: Int) {
 
     val requestOptions = RequestOptions()
         .placeholder(R.drawable.track_placeholder)
@@ -28,5 +28,19 @@ fun ImageView.setImage(url: String = "", cornerRadius: Int) {
         .load(R.drawable.track_placeholder)
         .apply(requestOptions)
         .transform(CenterCrop(), RoundedCorners(cornerRadius))
+        .into(this)
+}
+
+fun ImageView.setImage() {
+
+    val requestOptions = RequestOptions()
+        .placeholder(R.drawable.track_placeholder)
+        .error(R.drawable.track_placeholder)
+
+    Glide
+        .with(this.context)
+        .load(R.drawable.track_placeholder)
+        .transform(CenterCrop())
+        .apply(requestOptions)
         .into(this)
 }
